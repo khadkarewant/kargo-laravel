@@ -11,3 +11,6 @@ Route::get('/requests', [ServiceRequestController::class, 'index'])->name('reque
 Route::post('/requests', [ServiceRequestController::class, 'store'])->name('requests.store');
 
 Route::delete('/requests/{request}', [ServiceRequestController::class, 'destroy'])->name('requests.destroy');
+
+Route::get('/requests/{request}/edit', [ServiceRequestController::class, 'edit'])->name('requests.edit');
+Route::put('/requests/{request}', [ServiceRequestController::class, 'update'])->name('requests.update');

@@ -34,4 +34,23 @@ class ServiceRequestController extends Controller
 
         return redirect()->route('requests.index');
     }
+    public function edit(ServiceRequest $request)
+    {
+        return view('requests.edit', compact('request'));
+    }
+
+    public function update(Request $httpRequest, ServiceRequest $request)
+    {
+        $data = $httpRequest->validate([
+            'service_type' => 'required|string|max:50',
+            'sender_name' => 'required|string|max:150',
+            'receiver_name' => 'required|string|max:150',
+            'tracking_id' => 'nullable|string|max:50',
+            'status' => 'required|string|max:20',
+        ]);
+
+        $request->update($data);
+        return redirect()->route('requests.index');
+    }
+    
 }

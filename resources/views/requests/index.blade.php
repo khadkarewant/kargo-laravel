@@ -58,6 +58,8 @@
                 <td>{{ $r->tracking_id ?? '-' }}</td>
                 <td>{{ $r->status }}</td>
                 <td>
+                    <a href="{{ route('requests.edit', $r->id) }}">Edit</a>
+
                     <form method="POST" action="{{ route('requests.destroy', $r->id) }}">
                         @csrf
                         @method('DELETE')
