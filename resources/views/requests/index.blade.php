@@ -8,25 +8,25 @@
 
     <div>
         <label>Service Type</label>
-        <input name="service_type" placeholder="import/export/clearance">
+        <input name="service_type" type="text" value="{{ old('service_type') }}" placeholder="import/export/clearance">
         @error('service_type') <div>{{ $message }}</div> @enderror
     </div>
 
     <div>
         <label>Sender Name</label>
-        <input name="sender_name">
+        <input name="sender_name" type="text" value="{{ old('sender_name') }}" >
         @error('sender_name') <div>{{ $message }}</div> @enderror
     </div>
 
     <div>
         <label>Receiver Name</label>
-        <input name="receiver_name">
+        <input name="receiver_name" type="text" value="{{ old('receiver_name') }}">
         @error('receiver_name') <div>{{ $message }}</div> @enderror
     </div>
 
     <div>
         <label>Tracking ID (optional)</label>
-        <input name="tracking_id">
+        <input name="tracking_id" type="text" value="{{ old('tracking_id') }}">
         @error('tracking_id') <div>{{ $message }}</div> @enderror
     </div>
 
