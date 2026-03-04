@@ -9,3 +9,5 @@ use App\Http\Controllers\ServiceRequestController;
 
 Route::get('/requests', [ServiceRequestController::class, 'index'])->name('requests.index');
 Route::post('/requests', [ServiceRequestController::class, 'store'])->name('requests.store');
+
+Route::delete('/requests/{request}', [ServiceRequestController::class, 'destroy'])->name('requests.destroy');

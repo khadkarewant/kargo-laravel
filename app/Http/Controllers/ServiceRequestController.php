@@ -28,4 +28,10 @@ class ServiceRequestController extends Controller
 
         return redirect()->route('requests.index');
     }
+    public function destroy(ServiceRequest $request)
+    {
+        $request->delete();
+
+        return redirect()->route('requests.index');
+    }
 }

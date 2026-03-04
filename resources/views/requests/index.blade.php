@@ -44,6 +44,7 @@
             <th>Receiver</th>
             <th>Tracking</th>
             <th>Status</th>
+            <th>Action</th>
         </tr>
     </thead>
 
@@ -56,7 +57,14 @@
                 <td>{{ $r->receiver_name }}</td>
                 <td>{{ $r->tracking_id ?? '-' }}</td>
                 <td>{{ $r->status }}</td>
-            </tr>
+                <td>
+                    <form method="POST" action="{{ route('requests.destroy', $r->id) }}">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>   
         @empty
             <tr>
                 <td colspan="6">No requests yet</td>
