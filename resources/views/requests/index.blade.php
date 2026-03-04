@@ -9,21 +9,25 @@
     <div>
         <label>Service Type</label>
         <input name="service_type" placeholder="import/export/clearance">
+        @error('service_type') <div>{{ $message }}</div> @enderror
     </div>
 
     <div>
         <label>Sender Name</label>
         <input name="sender_name">
+        @error('sender_name') <div>{{ $message }}</div> @enderror
     </div>
 
     <div>
         <label>Receiver Name</label>
         <input name="receiver_name">
+        @error('receiver_name') <div>{{ $message }}</div> @enderror
     </div>
 
     <div>
         <label>Tracking ID (optional)</label>
         <input name="tracking_id">
+        @error('tracking_id') <div>{{ $message }}</div> @enderror
     </div>
 
     <button type="submit">Create Request</button>
@@ -50,7 +54,7 @@
                 <td>{{ $r->service_type }}</td>
                 <td>{{ $r->sender_name }}</td>
                 <td>{{ $r->receiver_name }}</td>
-                <td>{{ $r->tracking_id }}</td>
+                <td>{{ $r->tracking_id ?? '-' }}</td>
                 <td>{{ $r->status }}</td>
             </tr>
         @empty
