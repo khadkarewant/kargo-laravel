@@ -1,6 +1,7 @@
-@extends('layouts.app')
+<x-app-layout>
 
-@section('content')
-<h1>About Kargo</h1>
-<p>Customs clearance and cargo logistics management.</p>
-@endsection
+
+    <h1>About Kargo</h1>
+    <p>Customs clearance and cargo logistics management.</p>
+
+</x-app-layout>
