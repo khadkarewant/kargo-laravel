@@ -15,9 +15,10 @@ Route::get('/dashboard', function () {
 Route::middleware('auth')->group(function () {
     Route::get('/requests', [ServiceRequestController::class, 'index'])->name('requests.index');
     Route::post('/requests', [ServiceRequestController::class, 'store'])->name('requests.store');
-    Route::get('/requests/{request}/edit', [ServiceRequestController::class, 'edit'])->name('requests.edit');
-    Route::put('/requests/{request}', [ServiceRequestController::class, 'update'])->name('requests.update');
-    Route::delete('requests/{request}', [ServiceRequestController::class,'destroy'])->name('requests.destroy');
+    Route::get('/requests/create', [ServiceRequestController::class, 'create'])->name('requests.create');
+    Route::get('/requests/{serviceRequest}/edit', [ServiceRequestController::class, 'edit'])->name('requests.edit');
+    Route::put('/requests/{serviceRequest}', [ServiceRequestController::class, 'update'])->name('requests.update');
+    Route::delete('requests/{serviceRequest}', [ServiceRequestController::class,'destroy'])->name('requests.destroy');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

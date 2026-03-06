@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('service_requests', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('service_type');
             $table->string('sender_name');
             $table->string('receiver_name');
-            $table->string('tracking_id')->nullable();
-            $table->string('status')->default('pending');
+            $table->string('tracking_id')->unique();
+            $table->string('status')->default('request');
+            $table->index('tracking_id');
             $table->timestamps();
         });
     }
