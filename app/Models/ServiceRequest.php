@@ -96,6 +96,11 @@ class ServiceRequest extends Model
         return $this->hasMany(TrackingEvent::class);
     }
 
+    public function activityLogs()
+    {
+        return $this->hasMany(ActivityLog::class);
+    }
+
     protected static function booted()
     {
         static::creating(function ($serviceRequest) {

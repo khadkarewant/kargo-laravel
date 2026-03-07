@@ -28,6 +28,9 @@ class RequestController extends Controller
 
     public function updateStatus(Request $request, ServiceRequest $serviceRequest)
     {
+        if (! auth()->user()->isEmployee()) {
+            abort(403);
+        }
         
         if (! $serviceRequest->canEmployeeUpdateStatus()) {
             return back()->with('error', 'Employee cannot update this request status.');
@@ -41,9 +44,23 @@ class RequestController extends Controller
             return back()->with('error', 'Invalid next status.');
         }
 
-        $serviceRequest->update([
-            'status' => $validated['status'],
-        ]);
+        $oldStatus = $serviceRequest->status;
+        $newStatus = $validated['status'];
+
+        DB::transaction(function () use ($serviceRequest, $oldStatus, $newStatus) {
+            $serviceRequest->update([
+                'status' => $newStatus,
+            ]);
+
+            $serviceRequest->activityLogs()->create([
+                'user_id' => auth()->id(),
+                'action' => 'status_updated',
+                'field_changed' => 'status',
+                'old_value' => $oldStatus,
+                'new_value' => $newStatus,
+                'description' => 'Employee updated request status',
+            ]);
+        });
 
         return back()->with('success', 'Request status updated successfully.');
     }
@@ -67,7 +84,10 @@ class RequestController extends Controller
             return back()->with('error', 'Invalid next tracking status.');
         }
 
-        DB::transaction(function () use ($serviceRequest, $validated) {
+        $oldTrackingStatus = $serviceRequest->tracking_status;
+        $newTrackingStatus = $validated['tracking_status'];
+
+        DB::transaction(function () use ($serviceRequest, $validated, $oldTrackingStatus, $newTrackingStatus) {
             $serviceRequest->update([
                 'tracking_status' => $validated['tracking_status'],
             ]);
@@ -77,9 +97,17 @@ class RequestController extends Controller
                 'tracking_status' => $validated['tracking_status'],
                 'note' => $validated['note'] ?? null,
             ]);
-            
+
+            $serviceRequest->activityLogs()->create([
+                'user_id' => auth()->id(),
+                'action' => 'tracking_status_updated',
+                'field_changed' => 'tracking_status',
+                'old_value' => $oldTrackingStatus,
+                'new_value' => $newTrackingStatus,
+                'description' => 'Employee updated tracking status',
+            ]);
         });
-        
+
         return back()->with('success', 'Tracking status updated successfully.');
     }
 

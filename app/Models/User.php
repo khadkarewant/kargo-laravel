@@ -58,6 +58,11 @@ class User extends Authenticatable
         return $this->hasMany(TrackingEvent::class, 'updated_by');
     }
 
+    public function activityLogs()
+    {
+        return $this->hasMany(ActivityLog::class);
+    }
+
     public function isCustomer()
     {
         return $this->role === 'customer';
