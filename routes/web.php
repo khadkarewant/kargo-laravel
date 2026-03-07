@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ServiceRequestController;
+use App\Http\Controllers\Employee\RequestController as EmployeeRequestController;
+use App\Http\Controllers\Manager\RequestController as ManagerRequestController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -23,6 +25,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/employee/requests', [EmployeeRequestController::class,'index'])->name('employee.requests.index');
+    Route::patch('/employee/requests/{serviceRequest}/status', [EmployeeRequestController::class, 'updateStatus'])->name('employee.requests.updateStatus');
+    Route::patch('/employee/requests/{serviceRequest}/tracking-status', [EmployeeRequestController::class, 'updateTrackingStatus'])->name('employee.requests.updateTrackingStatus');
+
+    Route::get('/manager/requests', [ManagerRequestController::class, 'index'])->name('manager.requests.index');
+    Route::patch('/manager.requests/{serviceRequest}/approve', [ManagerRequestController::class, 'approve'])->name('manager.requests.approve');
 });
 
 require __DIR__.'/auth.php';

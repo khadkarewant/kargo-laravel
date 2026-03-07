@@ -52,4 +52,24 @@ class User extends Authenticatable
     {
         return $this->hasMany(ServiceRequest::class);
     }
+
+    public function trackingEvents()
+    {
+        return $this->hasMany(TrackingEvent::class, 'updated_by');
+    }
+
+    public function isCustomer()
+    {
+        return $this->role === 'customer';
+    }
+
+    public function isEmployee()
+    {
+        return $this->role ==='employee';
+    }
+    
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
 }
