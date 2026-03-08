@@ -38,7 +38,17 @@
                                 @method('PATCH')
                                 <button type="submit">Approve</button>
                             </form>
-                        @else
+                        @endif
+
+                        @if ($serviceRequest->canManagerMarkRevisionRequired())
+                            <form action="{{ route('manager.requests.markRevisionRequired', $serviceRequest) }}" method="POST">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit">Mark as Revision Required</button>
+                            </form>
+                        @endif
+
+                        @if (! $serviceRequest->canManagerApprove() && ! $serviceRequest->canManagerMarkRevisionRequired())
                             No action available
                         @endif
                     </td>

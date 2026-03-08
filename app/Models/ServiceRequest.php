@@ -37,7 +37,10 @@ class ServiceRequest extends Model
 
     public function canEmployeeUpdateTrackingStatus(): bool
     {
-        return $this->status === self::STATUS_APPROVED;
+        return in_array($this->status, [
+            self::STATUS_APPROVED,
+            self::STATUS_REVISION_REQUIRED,
+        ], true);
     }
 
     public function nextTrackingStatus(): ?string
@@ -75,8 +78,23 @@ class ServiceRequest extends Model
 
     public function canManagerApprove(): bool
     {
-        return $this->status === self::STATUS_COMPLETED;
+        return in_array($this->status, [
+            self::STATUS_COMPLETED,
+            self::STATUS_REVISION_REQUIRED,
+        ], true); 
     }
+
+    public function canManagerMarkRevisionRequired(): bool
+    {
+        return $this->status === self::STATUS_APPROVED;
+    }
+
+    public function isRevisionRequired(): bool
+    {
+        return $this->status === self::STATUS_REVISION_REQUIRED;
+    }
+
+
 
     protected $fillable = [
         'service_type',

@@ -41,6 +41,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/manager/requests', [ManagerRequestController::class, 'index'])->name('manager.requests.index');
     Route::patch('/manager/requests/{serviceRequest}/approve', [ManagerRequestController::class, 'approve'])->name('manager.requests.approve');
+    Route::patch('/manager/requests/{serviceRequest}/revision-required', [ManagerRequestController::class, 'markRevisionRequired'])->name('manager.requests.markRevisionRequired');
 });
 
 require __DIR__.'/auth.php';
