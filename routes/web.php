@@ -36,6 +36,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/employee/requests', [EmployeeRequestController::class,'index'])->name('employee.requests.index');
+    Route::get('/employee/requests/{serviceRequest}', [EmployeeRequestController::class,'show'])->name('employee.requests.show');
     Route::patch('/employee/requests/{serviceRequest}/status', [EmployeeRequestController::class, 'updateStatus'])->name('employee.requests.updateStatus');
     Route::patch('/employee/requests/{serviceRequest}/tracking-status', [EmployeeRequestController::class, 'updateTrackingStatus'])->name('employee.requests.updateTrackingStatus');
 

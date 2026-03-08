@@ -16,7 +16,7 @@ class RequestController extends Controller
             abort(403);
         }
 
-        $serviceRequests = ServiceRequest::with(['trackingEvents.updater'])->whereIn('status', [
+        $serviceRequests = ServiceRequest::with(['trackingEvents.updater', 'activityLogs.user'])->whereIn('status', [
             ServiceRequest::STATUS_REQUEST,
             ServiceRequest::STATUS_PENDING,
             ServiceRequest::STATUS_COMPLETED,
@@ -110,6 +110,20 @@ class RequestController extends Controller
         });
 
         return back()->with('success', 'Tracking status updated successfully.');
+    }
+
+    public function show(ServiceRequest $serviceRequest)
+    {
+        if (! auth()->user()->isEmployee()) {
+            abort(403);
+        }
+
+        $serviceRequest->load([
+            'trackingEvents.updater',
+            'activityLogs.user',
+        ]);
+
+        return view('employee.requests.show', compact('serviceRequest'));
     }
 
 }

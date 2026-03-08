@@ -33,6 +33,8 @@
                 <td>{{ $serviceRequest->status }}</td>
                 <td>{{ $serviceRequest->tracking_status ? ucfirst($serviceRequest->tracking_status) : 'Not started' }}</td>
                 <td>
+                    <a href="{{ route('employee.requests.show', $serviceRequest) }}">View Details</a>
+                    <br><br>
                     @if ($serviceRequest->canEmployeeUpdateStatus())
                     <form action="{{ route('employee.requests.updateStatus', $serviceRequest) }}" method="POST">
                         @csrf
@@ -60,29 +62,6 @@
                         </form>
                     @else
                         No action available
-                    @endif
-                </td>
-            </tr>
-
-            <tr>
-                <td colspan=7>
-                    <strong>Tracking History:</strong>
-
-                    @if($serviceRequest->trackingEvents->isEmpty())
-                        <p>No tracking events yet.</p>
-                    @else
-                        <ul>
-                            @foreach($serviceRequest->trackingEvents as $event)
-                            <li>
-                                <strong>{{ ucfirst($event->tracking_status) }}</strong>
-                                by {{ $event->updater->name ?? 'Unknown' }}
-                                at {{ $event->created_at->format('Y-m-d h:i A') }}
-                                @if($event->note)
-                                    - {{ $event->note }}
-                                @endif
-                            </li>
-                            @endforeach
-                        </ul>
                     @endif
                 </td>
             </tr>
