@@ -1,11 +1,11 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard') }}
+            {{ __('Manager Dashboard') }}
         </h2>
     </x-slot>
 
-    <a href="{{ route('requests.index') }}">Check Requests</a>
+    <a href="{{ route('manager.requests.index') }}">Check Requests</a>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">

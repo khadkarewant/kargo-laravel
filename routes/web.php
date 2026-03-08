@@ -14,6 +14,15 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('/employee/dashboard', function () {
+    return view('employee.dashboard');
+})->middleware(['auth', 'verified'])->name('employee.dashboard');
+
+Route::get('/manager/dashboard', function () {
+    return view('manager.dashboard');
+})->middleware(['auth', 'verified'])->name('manager.dashboard');
+
+
 Route::middleware('auth')->group(function () {
     Route::get('/requests', [ServiceRequestController::class, 'index'])->name('requests.index');
     Route::post('/requests', [ServiceRequestController::class, 'store'])->name('requests.store');
@@ -31,7 +40,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/employee/requests/{serviceRequest}/tracking-status', [EmployeeRequestController::class, 'updateTrackingStatus'])->name('employee.requests.updateTrackingStatus');
 
     Route::get('/manager/requests', [ManagerRequestController::class, 'index'])->name('manager.requests.index');
-    Route::patch('/manager.requests/{serviceRequest}/approve', [ManagerRequestController::class, 'approve'])->name('manager.requests.approve');
+    Route::patch('/manager/requests/{serviceRequest}/approve', [ManagerRequestController::class, 'approve'])->name('manager.requests.approve');
 });
 
 require __DIR__.'/auth.php';
