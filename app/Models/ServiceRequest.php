@@ -182,10 +182,7 @@ class ServiceRequest extends Model
 
     public function canManagerApprove(): bool
     {
-        return in_array($this->status, [
-            self::STATUS_COMPLETED,
-            self::STATUS_REVISION_REQUIRED,
-        ], true);
+        return $this->status === self::STATUS_COMPLETED;
     }
 
     public function canManagerMarkRevisionRequired(): bool

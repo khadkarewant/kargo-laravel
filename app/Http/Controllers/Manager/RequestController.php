@@ -66,7 +66,7 @@ class RequestController extends Controller
             'field_changed' => 'status',
             'old_value' => $oldStatus,
             'new_value' => $newStatus,
-            'description' => 'Manager marked approved request as revision required',
+            'description' => 'Manager marked request as revision required',
             ]);
         });
         return back()->with('success', 'Request marked as revision required.');
@@ -77,6 +77,7 @@ class RequestController extends Controller
         $serviceRequest->load([
             'trackingEvents.updater',
             'activityLogs.user',
+            'processor',
         ]);
 
         return view('manager.requests.show', compact('serviceRequest'));

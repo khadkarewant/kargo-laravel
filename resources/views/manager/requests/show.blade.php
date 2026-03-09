@@ -10,12 +10,35 @@
     <h1>Manager Request Details</h1>
 
     <p><strong>Tracking ID:</strong> {{ $serviceRequest->tracking_id }}</p>
-    <p><strong>Sender:</strong> {{ $serviceRequest->sender_name }}</p>
-    <p><strong>Receiver:</strong> {{ $serviceRequest->receiver_name }}</p>
-    <p><strong>Service Type:</strong> {{ $serviceRequest->service_type }}</p>
-    <p><strong>Status:</strong> {{ $serviceRequest->status }}</p>
+    <p><strong>Service Type:</strong> {{ ucfirst($serviceRequest->service_type) }}</p>
+    <p><strong>Status:</strong> {{ ucfirst(str_replace('_', ' ', $serviceRequest->status)) }}</p>
     <p><strong>Tracking Status:</strong> {{ $serviceRequest->tracking_status ? ucfirst($serviceRequest->tracking_status) : 'Not started' }}</p>
 
+    <hr>
+
+    <h2>Customer Submitted Details</h2>
+
+    <p><strong>Sender:</strong> {{ $serviceRequest->sender_name }}</p>
+    <p><strong>Sender Country:</strong> {{ $serviceRequest->sender_country ?? 'N/A' }}</p>
+    <p><strong>Sender Contact:</strong> {{ $serviceRequest->sender_contact ?? 'N/A' }}</p>
+
+    <p><strong>Receiver:</strong> {{ $serviceRequest->receiver_name }}</p>
+    <p><strong>Receiver Country:</strong> {{ $serviceRequest->receiver_country ?? 'N/A' }}</p>
+    <p><strong>Receiver Contact:</strong> {{ $serviceRequest->receiver_contact ?? 'N/A' }}</p>
+
+    <p><strong>Customer Notes:</strong> {{ $serviceRequest->notes ?? 'N/A' }}</p>
+
+    <hr>
+
+    <h2>Employee Processed Details</h2>
+
+    <p><strong>Quantity:</strong> {{ $serviceRequest->quantity ?? 'N/A' }}</p>
+    <p><strong>Product Detail:</strong> {{ $serviceRequest->product_detail ?? 'N/A' }}</p>
+    <p><strong>Weight:</strong> {{ $serviceRequest->weight ?? 'N/A' }}</p>
+    <p><strong>Dimension:</strong> {{ $serviceRequest->dimension ?? 'N/A' }}</p>
+    <p><strong>Employee Note:</strong> {{ $serviceRequest->employee_note ?? 'N/A' }}</p>
+    <p><strong>Processed By:</strong> {{ $serviceRequest->processor->name ?? 'N/A' }}</p>
+    <p><strong>Processed At:</strong> {{ $serviceRequest->processed_at ? $serviceRequest->processed_at->format('Y-m-d h:i A') : 'N/A' }}</p>
     <hr>
 
     <h2>Action</h2>
