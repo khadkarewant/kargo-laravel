@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\ServiceRequest;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 
 class RequestController extends Controller
@@ -22,6 +23,25 @@ class RequestController extends Controller
         return view('employee.requests.index', compact('serviceRequests'));
     }
 
+    public function update(Request $request, ServiceRequest $serviceRequest)
+    {
+        if (! $serviceRequest->canEmployeeUpdateDetails()) {
+            return back()->with('error', 'Employee cannot update this request details.');
+        }
+
+        $validated = $request->validate([
+            'quantity' => ['nullable', 'string', 'max:255'],
+            'product_detail' => ['nullable', 'string'],
+            'weight' => ['nullable', 'string', 'max:255'],
+            'dimension' => ['nullable', 'string', 'max:255'],
+            'employee_note' => ['nullable', 'string'],
+        ]);
+
+        $serviceRequest->update($validated);
+
+        return back()->with('success', 'Request details updated successfully.');
+    }
+
     public function updateStatus(Request $request, ServiceRequest $serviceRequest)
     {
         if (! $serviceRequest->canEmployeeUpdateStatus()) {
@@ -29,20 +49,45 @@ class RequestController extends Controller
         }
 
         $validated = $request->validate([
-            'status' => ['required', 'string'],
+            'status' => ['required', 'string', Rule::in([
+                ServiceRequest::STATUS_PENDING,
+                ServiceRequest::STATUS_COMPLETED,
+            ])],
         ]);
 
         if ($validated['status'] !== $serviceRequest->nextEmployeeStatus()) {
             return back()->with('error', 'Invalid next status.');
         }
 
+        if ($validated['status'] === ServiceRequest::STATUS_COMPLETED) {
+            foreach (['quantity', 'product_detail', 'weight', 'dimension'] as $field) {
+                if (blank($serviceRequest->{$field})) {
+                    return back()->with(
+                        'error',
+                        ucfirst(str_replace('_', ' ', $field)) . ' is required before marking complete.'
+                    );
+                }
+            }
+        }
+
         $oldStatus = $serviceRequest->status;
         $newStatus = $validated['status'];
 
         DB::transaction(function () use ($serviceRequest, $oldStatus, $newStatus) {
-            $serviceRequest->update([
+            $updateData = [
                 'status' => $newStatus,
-            ]);
+            ];
+
+            if ($newStatus === ServiceRequest::STATUS_PENDING && $oldStatus === ServiceRequest::STATUS_REQUEST) {
+                $updateData['processed_by'] = auth()->id();
+            }
+
+            if ($newStatus === ServiceRequest::STATUS_COMPLETED) {
+                $updateData['processed_by'] = auth()->id();
+                $updateData['processed_at'] = now();
+            }
+
+            $serviceRequest->update($updateData);
 
             $serviceRequest->activityLogs()->create([
                 'user_id' => auth()->id(),

@@ -121,6 +121,14 @@ class ServiceRequest extends Model
         ], true);
     }
 
+    public function canEmployeeUpdateDetails(): bool
+    {
+        return in_array($this->status, [
+            self::STATUS_REQUEST,
+            self::STATUS_PENDING,
+            self::STATUS_REVISION_REQUIRED,
+        ], true);
+    }
     public function nextEmployeeStatus(): ?string
     {
         return match ($this->status) {

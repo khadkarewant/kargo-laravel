@@ -40,7 +40,14 @@ Route::middleware(['auth', 'verified', 'role:employee'])
 
         Route::get('/requests', [EmployeeRequestController::class, 'index'])->name('requests.index');
         Route::get('/requests/{serviceRequest}', [EmployeeRequestController::class, 'show'])->name('requests.show');
+        
+        // save employee processing details
+        Route::patch('/requests/{serviceRequest}', [EmployeeRequestController::class, 'update'])->name('requests.update');
+        
+        // change request status separately
         Route::patch('/requests/{serviceRequest}/status', [EmployeeRequestController::class, 'updateStatus'])->name('requests.updateStatus');
+
+        // tracking flow after approval/revision stage        
         Route::patch('/requests/{serviceRequest}/tracking-status', [EmployeeRequestController::class, 'updateTrackingStatus'])->name('requests.updateTrackingStatus');
     });
 
