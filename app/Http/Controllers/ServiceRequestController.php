@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ServiceRequest;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ServiceRequestController extends Controller
 {
@@ -29,44 +30,22 @@ class ServiceRequestController extends Controller
         $this->authorize('create', ServiceRequest::class);
 
         $data = $request->validate([
-            'service_type'  => 'required|string|max:50',
-            'sender_name'   => 'required|string|max:150',
-            'receiver_name' => 'required|string|max:150',
+            'service_type' => ['required', 'string', Rule::in(ServiceRequest::SERVICE_TYPES)],
+            'sender_name' => ['required', 'string', 'max:150'],
+            'sender_country' => ['required', 'string', 'max:150'],
+            'sender_contact' => ['required', 'string', 'max:150'],
+            'receiver_name' => ['required', 'string', 'max:150'],
+            'receiver_country' => ['required', 'string', 'max:150'],
+            'receiver_contact' => ['required', 'string', 'max:150'],
+            'notes' => ['required', 'string'],
         ]);
+
+        $data['status'] = ServiceRequest::STATUS_REQUEST;
 
         auth()->user()->serviceRequests()->create($data);
 
-        return redirect()->route('requests.index');
-    }
-    
-    public function destroy(ServiceRequest $serviceRequest)
-    {
-        $this->authorize('delete', $serviceRequest);
-
-        $serviceRequest->delete();
-
-        return redirect()->route('requests.index');
-    }
-
-    public function edit(ServiceRequest $serviceRequest)
-    {
-        $this->authorize('update', $serviceRequest);
-
-        return view('requests.edit', compact('serviceRequest'));
-    }
-
-    public function update(Request $request, ServiceRequest $serviceRequest)
-    {
-        $this->authorize('update', $serviceRequest);
-
-        $data = $request->validate([
-            'service_type' => 'required|string|max:50',
-            'sender_name' => 'required|string|max:150',
-            'receiver_name' => 'required|string|max:150',
-        ]);
-
-        $serviceRequest->update($data);
-
-        return redirect()->route('requests.index');
+        return redirect()
+            ->route('requests.index')
+            ->with('success', 'Service request submitted successfully.');
     }
 }

@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ServiceRequest extends Model
 {
@@ -12,23 +14,46 @@ class ServiceRequest extends Model
     public const STATUS_APPROVED = 'approved';
     public const STATUS_REVISION_REQUIRED = 'revision_required';
 
+    public const STATUSES = [
+        self::STATUS_REQUEST,
+        self::STATUS_PENDING,
+        self::STATUS_COMPLETED,
+        self::STATUS_APPROVED,
+        self::STATUS_REVISION_REQUIRED,
+    ];
+
     public const TRACKING_WAREHOUSE = 'warehouse';
     public const TRACKING_CUSTOMS = 'customs';
     public const TRACKING_OFFICE = 'office';
     public const TRACKING_ROUTE = 'route';
     public const TRACKING_DESTINATION = 'destination';
 
+    public const TRACKING_STATUSES = [
+        self::TRACKING_WAREHOUSE,
+        self::TRACKING_CUSTOMS,
+        self::TRACKING_OFFICE,
+        self::TRACKING_ROUTE,
+        self::TRACKING_DESTINATION,
+    ];
+
     public const SERVICE_CLEARANCE = 'clearance';
     public const SERVICE_IMPORT = 'import';
     public const SERVICE_COURIER = 'courier';
     public const SERVICE_EXPORT = 'export';
 
+    public const SERVICE_TYPES = [
+        self::SERVICE_CLEARANCE,
+        self::SERVICE_IMPORT,
+        self::SERVICE_COURIER,
+        self::SERVICE_EXPORT,
+    ];
+
     public const ACTION_REQUEST_APPROVED = 'request_approved';
     public const ACTION_REVISION_REQUIRED = 'revision_required';
 
     public const IN_FLOW_SERVICE_TYPES = [
-    self::SERVICE_CLEARANCE,
-    self::SERVICE_IMPORT,
+        self::SERVICE_CLEARANCE,
+        self::SERVICE_IMPORT,
     ];
 
     public const OUT_FLOW_SERVICE_TYPES = [
@@ -36,11 +61,63 @@ class ServiceRequest extends Model
         self::SERVICE_EXPORT,
     ];
 
+    protected $fillable = [
+        'user_id',
+        'service_type',
+        'sender_name',
+        'sender_country',
+        'sender_contact',
+        'receiver_name',
+        'receiver_country',
+        'receiver_contact',
+        'notes',
+        'quantity',
+        'product_detail',
+        'weight',
+        'dimension',
+        'employee_note',
+        'tracking_id',
+        'status',
+        'tracking_status',
+        'processed_by',
+        'processed_at',
+    ];
+
+    protected $casts = [
+        'processed_at' => 'datetime',
+    ];
+
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function processor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'processed_by');
+    }
+
+    public function trackingEvents(): HasMany
+    {
+        return $this->hasMany(TrackingEvent::class);
+    }
+
+    public function activityLogs(): HasMany
+    {
+        return $this->hasMany(ActivityLog::class);
+    }
+
     public function canEmployeeUpdateStatus(): bool
     {
         return in_array($this->status, [
             self::STATUS_REQUEST,
             self::STATUS_PENDING,
+            self::STATUS_REVISION_REQUIRED,
         ], true);
     }
 
@@ -48,7 +125,7 @@ class ServiceRequest extends Model
     {
         return match ($this->status) {
             self::STATUS_REQUEST => self::STATUS_PENDING,
-            self::STATUS_PENDING => self::STATUS_COMPLETED,
+            self::STATUS_PENDING, self::STATUS_REVISION_REQUIRED => self::STATUS_COMPLETED,
             default => null,
         };
     }
@@ -86,6 +163,7 @@ class ServiceRequest extends Model
                 default => null,
             };
         }
+
         return null;
     }
 
@@ -99,12 +177,12 @@ class ServiceRequest extends Model
         return in_array($this->status, [
             self::STATUS_COMPLETED,
             self::STATUS_REVISION_REQUIRED,
-        ], true); 
+        ], true);
     }
 
     public function canManagerMarkRevisionRequired(): bool
     {
-        return $this->status === self::STATUS_APPROVED;
+        return $this->status === self::STATUS_COMPLETED;
     }
 
     public function isRevisionRequired(): bool
@@ -112,34 +190,9 @@ class ServiceRequest extends Model
         return $this->status === self::STATUS_REVISION_REQUIRED;
     }
 
-
-
-    protected $fillable = [
-        'service_type',
-        'sender_name',
-        'receiver_name',
-        'status',
-        'tracking_status',
-    ];
-
-    public function user()
+    protected static function booted(): void
     {
-        return $this->belongsTo(User::class);
-    }
-
-    public function trackingEvents()
-    {
-        return $this->hasMany(TrackingEvent::class);
-    }
-
-    public function activityLogs()
-    {
-        return $this->hasMany(ActivityLog::class);
-    }
-
-    protected static function booted()
-    {
-        static::creating(function ($serviceRequest) {
+        static::creating(function (ServiceRequest $serviceRequest) {
             $year = now()->year;
             $lastRequest = self::whereYear('created_at', $year)->latest('id')->first();
 
