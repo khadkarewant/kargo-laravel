@@ -9,19 +9,25 @@ class ServiceRequestController extends Controller
 {
     public function index()
     {
-        $requests =  auth()->user()->serviceRequests()
-        ->latest()
-        ->get();
+        $requests = auth()->user()
+            ->serviceRequests()
+            ->latest()
+            ->get();
+
         return view('requests.index', compact('requests'));
     }
 
     public function create()
     {
+        $this->authorize('create', ServiceRequest::class);
+
         return view('requests.create');
     }
     
     public function store(Request $request)
     {
+        $this->authorize('create', ServiceRequest::class);
+
         $data = $request->validate([
             'service_type'  => 'required|string|max:50',
             'sender_name'   => 'required|string|max:150',
@@ -35,9 +41,8 @@ class ServiceRequestController extends Controller
     
     public function destroy(ServiceRequest $serviceRequest)
     {
-        if ($serviceRequest->user_id !== auth()->id()){
-            abort(403);
-        }
+        $this->authorize('delete', $serviceRequest);
+
         $serviceRequest->delete();
 
         return redirect()->route('requests.index');
@@ -45,26 +50,23 @@ class ServiceRequestController extends Controller
 
     public function edit(ServiceRequest $serviceRequest)
     {
-        if ($serviceRequest->user_id !== auth()->id()){
-            abort(403);
-        }
+        $this->authorize('update', $serviceRequest);
 
         return view('requests.edit', compact('serviceRequest'));
     }
 
-    public function update(Request $httpRequest, ServiceRequest $serviceRequest)
+    public function update(Request $request, ServiceRequest $serviceRequest)
     {
-        if ($serviceRequest->user_id !== auth()->id()){
-            abort(403);
-        }
-        $data = $httpRequest->validate([
+        $this->authorize('update', $serviceRequest);
+
+        $data = $request->validate([
             'service_type' => 'required|string|max:50',
             'sender_name' => 'required|string|max:150',
             'receiver_name' => 'required|string|max:150',
         ]);
 
         $serviceRequest->update($data);
+
         return redirect()->route('requests.index');
     }
-    
 }
