@@ -63,18 +63,18 @@ class User extends Authenticatable
         return $this->hasMany(ActivityLog::class);
     }
 
-    public function isCustomer()
+    public function isCustomer(): bool
     {
         return $this->role === 'customer';
     }
 
-    public function isEmployee()
+    public function isEmployee(): bool
     {
         return $this->role ==='employee';
     }
     
-    public function isAdmin()
+    public function isManager(): bool
     {
-        return $this->role === 'admin';
+        return $this->role === 'manager';
     }
 }

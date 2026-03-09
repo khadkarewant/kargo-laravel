@@ -11,7 +11,7 @@ class RequestController extends Controller
 {
     public function index()
     {
-        if (! auth()->user()->isAdmin()){
+        if (! auth()->user()->isManager()){
             abort(403);
         }
 
@@ -23,7 +23,7 @@ class RequestController extends Controller
 
     public function approve(ServiceRequest $serviceRequest)
     {
-        if (! auth()->user()->isAdmin()) {
+        if (! auth()->user()->isManager()) {
             abort(403);
         }
 
@@ -56,7 +56,7 @@ class RequestController extends Controller
 
     public function markRevisionRequired(ServiceRequest $serviceRequest)
     {
-        if (! auth()->user()->isAdmin()) {
+        if (! auth()->user()->isManager()) {
             abort(403);
         }
 

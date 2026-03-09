@@ -10,39 +10,56 @@ Route::get('/', function () {
     return view('home');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+});
 
-Route::get('/employee/dashboard', function () {
-    return view('employee.dashboard');
-})->middleware(['auth', 'verified'])->name('employee.dashboard');
-
-Route::get('/manager/dashboard', function () {
-    return view('manager.dashboard');
-})->middleware(['auth', 'verified'])->name('manager.dashboard');
-
-
-Route::middleware('auth')->group(function () {
-    Route::get('/requests', [ServiceRequestController::class, 'index'])->name('requests.index');
-    Route::post('/requests', [ServiceRequestController::class, 'store'])->name('requests.store');
-    Route::get('/requests/create', [ServiceRequestController::class, 'create'])->name('requests.create');
-    Route::get('/requests/{serviceRequest}/edit', [ServiceRequestController::class, 'edit'])->name('requests.edit');
-    Route::put('/requests/{serviceRequest}', [ServiceRequestController::class, 'update'])->name('requests.update');
-    Route::delete('requests/{serviceRequest}', [ServiceRequestController::class,'destroy'])->name('requests.destroy');
-
+Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-    Route::get('/employee/requests', [EmployeeRequestController::class,'index'])->name('employee.requests.index');
-    Route::get('/employee/requests/{serviceRequest}', [EmployeeRequestController::class,'show'])->name('employee.requests.show');
-    Route::patch('/employee/requests/{serviceRequest}/status', [EmployeeRequestController::class, 'updateStatus'])->name('employee.requests.updateStatus');
-    Route::patch('/employee/requests/{serviceRequest}/tracking-status', [EmployeeRequestController::class, 'updateTrackingStatus'])->name('employee.requests.updateTrackingStatus');
-
-    Route::get('/manager/requests', [ManagerRequestController::class, 'index'])->name('manager.requests.index');
-    Route::patch('/manager/requests/{serviceRequest}/approve', [ManagerRequestController::class, 'approve'])->name('manager.requests.approve');
-    Route::patch('/manager/requests/{serviceRequest}/revision-required', [ManagerRequestController::class, 'markRevisionRequired'])->name('manager.requests.markRevisionRequired');
 });
+
+// CUSTOMER ROUTES
+Route::middleware(['auth', 'verified', 'role:customer'])->group(function () {
+    Route::get('/requests', [ServiceRequestController::class, 'index'])->name('requests.index');
+    Route::get('/requests/create', [ServiceRequestController::class, 'create'])->name('requests.create');
+    Route::post('/requests', [ServiceRequestController::class, 'store'])->name('requests.store');
+
+    Route::get('/requests/{serviceRequest}/edit', [ServiceRequestController::class, 'edit'])->name('requests.edit');
+    Route::put('/requests/{serviceRequest}', [ServiceRequestController::class, 'update'])->name('requests.update');
+    Route::delete('/requests/{serviceRequest}', [ServiceRequestController::class, 'destroy'])->name('requests.destroy');
+});
+
+// EMPLOYEE ROUTES
+Route::middleware(['auth', 'verified', 'role:employee'])
+    ->prefix('employee')
+    ->name('employee.')
+    ->group(function () {
+        Route::get('/dashboard', function () {
+            return view('employee.dashboard');
+        })->name('dashboard');
+
+        Route::get('/requests', [EmployeeRequestController::class, 'index'])->name('requests.index');
+        Route::get('/requests/{serviceRequest}', [EmployeeRequestController::class, 'show'])->name('requests.show');
+        Route::patch('/requests/{serviceRequest}/status', [EmployeeRequestController::class, 'updateStatus'])->name('requests.updateStatus');
+        Route::patch('/requests/{serviceRequest}/tracking-status', [EmployeeRequestController::class, 'updateTrackingStatus'])->name('requests.updateTrackingStatus');
+    });
+
+// MANAGER ROUTES
+Route::middleware(['auth', 'verified', 'role:manager'])
+    ->prefix('manager')
+    ->name('manager.')
+    ->group(function () {
+        Route::get('/dashboard', function () {
+            return view('manager.dashboard');
+        })->name('dashboard');
+
+        Route::get('/requests', [ManagerRequestController::class, 'index'])->name('requests.index');
+        Route::patch('/requests/{serviceRequest}/approve', [ManagerRequestController::class, 'approve'])->name('requests.approve');
+        Route::patch('/requests/{serviceRequest}/revision-required', [ManagerRequestController::class, 'markRevisionRequired'])->name('requests.markRevisionRequired');
+    });
 
 require __DIR__.'/auth.php';
