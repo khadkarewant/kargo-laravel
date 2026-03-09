@@ -32,25 +32,9 @@
                     <td>{{ $serviceRequest->status }}</td>
                     <td>{{ $serviceRequest->tracking_status }}</td>
                     <td>
-                        @if ($serviceRequest->canManagerApprove())
-                            <form action="{{ route('manager.requests.approve', $serviceRequest) }}" method="POST">
-                                @csrf
-                                @method('PATCH')
-                                <button type="submit">Approve</button>
-                            </form>
-                        @endif
-
-                        @if ($serviceRequest->canManagerMarkRevisionRequired())
-                            <form action="{{ route('manager.requests.markRevisionRequired', $serviceRequest) }}" method="POST">
-                                @csrf
-                                @method('PATCH')
-                                <button type="submit">Mark as Revision Required</button>
-                            </form>
-                        @endif
-
-                        @if (! $serviceRequest->canManagerApprove() && ! $serviceRequest->canManagerMarkRevisionRequired())
-                            No action available
-                        @endif
+                        <a href="{{ route('manager.requests.show', $serviceRequest) }}">
+                            View Details
+                        </a>
                     </td>
                 </tr>
             @endforeach

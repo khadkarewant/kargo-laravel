@@ -11,10 +11,6 @@ class RequestController extends Controller
 {
     public function index()
     {
-        if (! auth()->user()->isManager()){
-            abort(403);
-        }
-
         $serviceRequests = ServiceRequest::latest()->get();
 
         return view('manager.requests.index', compact('serviceRequests'));
@@ -23,10 +19,6 @@ class RequestController extends Controller
 
     public function approve(ServiceRequest $serviceRequest)
     {
-        if (! auth()->user()->isManager()) {
-            abort(403);
-        }
-
         if (! $serviceRequest->canManagerApprove()) {
             return back()->with('error', 'This request cannot be approved.');
         }
@@ -41,7 +33,7 @@ class RequestController extends Controller
 
             $serviceRequest->activityLogs()->create([
                 'user_id' => auth()->id(),
-                'action' => 'request_approved',
+                'action' => ServiceRequest::ACTION_REQUEST_APPROVED,
                 'field_changed' => 'status',
                 'old_value' => $oldStatus,
                 'new_value' => $newStatus,
@@ -56,10 +48,6 @@ class RequestController extends Controller
 
     public function markRevisionRequired(ServiceRequest $serviceRequest)
     {
-        if (! auth()->user()->isManager()) {
-            abort(403);
-        }
-
         if (! $serviceRequest->canManagerMarkRevisionRequired()) {
             return back()->with('error', 'This request cannot be marked as revision required.');
         }
@@ -74,7 +62,7 @@ class RequestController extends Controller
 
             $serviceRequest->activityLogs()->create([
             'user_id' => auth()->id(),
-            'action' => 'revision_required',
+            'action' => ServiceRequest::ACTION_REVISION_REQUIRED,
             'field_changed' => 'status',
             'old_value' => $oldStatus,
             'new_value' => $newStatus,
@@ -82,5 +70,15 @@ class RequestController extends Controller
             ]);
         });
         return back()->with('success', 'Request marked as revision required.');
+    }
+
+    public function show(ServiceRequest $serviceRequest)
+    {
+        $serviceRequest->load([
+            'trackingEvents.updater',
+            'activityLogs.user',
+        ]);
+
+        return view('manager.requests.show', compact('serviceRequest'));
     }
 }

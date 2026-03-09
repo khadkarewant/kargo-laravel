@@ -58,7 +58,11 @@ Route::middleware(['auth', 'verified', 'role:manager'])
         })->name('dashboard');
 
         Route::get('/requests', [ManagerRequestController::class, 'index'])->name('requests.index');
+
+        Route::get('/requests/{serviceRequest}', [ManagerRequestController::class, 'show'])->name('requests.show');
+
         Route::patch('/requests/{serviceRequest}/approve', [ManagerRequestController::class, 'approve'])->name('requests.approve');
+        
         Route::patch('/requests/{serviceRequest}/revision-required', [ManagerRequestController::class, 'markRevisionRequired'])->name('requests.markRevisionRequired');
     });
 

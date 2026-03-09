@@ -18,6 +18,24 @@ class ServiceRequest extends Model
     public const TRACKING_ROUTE = 'route';
     public const TRACKING_DESTINATION = 'destination';
 
+    public const SERVICE_CLEARANCE = 'clearance';
+    public const SERVICE_IMPORT = 'import';
+    public const SERVICE_COURIER = 'courier';
+    public const SERVICE_EXPORT = 'export';
+
+    public const ACTION_REQUEST_APPROVED = 'request_approved';
+    public const ACTION_REVISION_REQUIRED = 'revision_required';
+
+    public const IN_FLOW_SERVICE_TYPES = [
+    self::SERVICE_CLEARANCE,
+    self::SERVICE_IMPORT,
+    ];
+
+    public const OUT_FLOW_SERVICE_TYPES = [
+        self::SERVICE_COURIER,
+        self::SERVICE_EXPORT,
+    ];
+
     public function canEmployeeUpdateStatus(): bool
     {
         return in_array($this->status, [
@@ -49,7 +67,7 @@ class ServiceRequest extends Model
             return null;
         }
 
-        if (in_array($this->service_type, ['clearance', 'import'], true)){
+        if (in_array($this->service_type, self::IN_FLOW_SERVICE_TYPES, true)) {
             return match ($this->tracking_status) {
                 null => self::TRACKING_WAREHOUSE,
                 self::TRACKING_WAREHOUSE => self::TRACKING_CUSTOMS,
@@ -59,7 +77,7 @@ class ServiceRequest extends Model
             };
         }
 
-        if (in_array($this->service_type, ['courier', 'export'], true)) {
+        if (in_array($this->service_type, self::OUT_FLOW_SERVICE_TYPES, true)) {
             return match ($this->tracking_status) {
                 null => self::TRACKING_OFFICE,
                 self::TRACKING_OFFICE => self::TRACKING_CUSTOMS,

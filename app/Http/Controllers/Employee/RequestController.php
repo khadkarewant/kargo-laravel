@@ -11,11 +11,6 @@ class RequestController extends Controller
 {
     public function index()
     {
-        // block non-employees
-        if (!auth()->user()->isEmployee()) {
-            abort(403);
-        }
-
         $serviceRequests = ServiceRequest::with(['trackingEvents.updater', 'activityLogs.user'])->whereIn('status', [
             ServiceRequest::STATUS_REQUEST,
             ServiceRequest::STATUS_PENDING,
@@ -29,10 +24,6 @@ class RequestController extends Controller
 
     public function updateStatus(Request $request, ServiceRequest $serviceRequest)
     {
-        if (! auth()->user()->isEmployee()) {
-            abort(403);
-        }
-        
         if (! $serviceRequest->canEmployeeUpdateStatus()) {
             return back()->with('error', 'Employee cannot update this request status.');
         }
@@ -68,10 +59,6 @@ class RequestController extends Controller
 
     public function updateTrackingStatus(Request $request, ServiceRequest $serviceRequest)
     {
-        if (! auth()->user()->isEmployee()) {
-            abort(403);
-        }
-
         if (! $serviceRequest->canEmployeeUpdateTrackingStatus()) {
             return back()->with('error', 'Employee cannot update tracking status for this request.');
         }
@@ -114,10 +101,6 @@ class RequestController extends Controller
 
     public function show(ServiceRequest $serviceRequest)
     {
-        if (! auth()->user()->isEmployee()) {
-            abort(403);
-        }
-
         $serviceRequest->load([
             'trackingEvents.updater',
             'activityLogs.user',

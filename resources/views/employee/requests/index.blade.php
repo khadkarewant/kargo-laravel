@@ -33,36 +33,9 @@
                 <td>{{ $serviceRequest->status }}</td>
                 <td>{{ $serviceRequest->tracking_status ? ucfirst($serviceRequest->tracking_status) : 'Not started' }}</td>
                 <td>
-                    <a href="{{ route('employee.requests.show', $serviceRequest) }}">View Details</a>
-                    <br><br>
-                    @if ($serviceRequest->canEmployeeUpdateStatus())
-                    <form action="{{ route('employee.requests.updateStatus', $serviceRequest) }}" method="POST">
-                        @csrf
-                        @method('PATCH')
-
-                        <input type="hidden" name="status" value="{{ $serviceRequest->nextEmployeeStatus() }}">
-
-                        <button class="submit">
-                            Move to {{ ucfirst($serviceRequest->nextEmployeeStatus()) }}
-                        </button>
-                    </form>
-
-                    @elseif ($serviceRequest->canEmployeeUpdateTrackingStatus() && $serviceRequest->nextTrackingStatus())
-                        <form action="{{ route('employee.requests.updateTrackingStatus', $serviceRequest) }}" method="POST">
-                            @csrf
-                            @method('PATCH')
-
-                            <input type="hidden" name="tracking_status" value="{{ $serviceRequest->nextTrackingStatus() }}">
-
-                            <textarea name="note" placeholder="Optional tracking note"></textarea>
-
-                            <button class="submit">
-                                Move to {{ ucfirst($serviceRequest->nextTrackingStatus()) }}
-                            </button>
-                        </form>
-                    @else
-                        No action available
-                    @endif
+                    <a href="{{ route('employee.requests.show', $serviceRequest) }}">
+                        View Details
+                    </a>
                 </td>
             </tr>
         @endforeach
