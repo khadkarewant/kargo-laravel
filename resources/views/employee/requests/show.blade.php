@@ -26,6 +26,7 @@
     <p><strong>Weight:</strong> {{ $serviceRequest->weight ?? 'N/A' }}</p>
     <p><strong>Dimension:</strong> {{ $serviceRequest->dimension ?? 'N/A' }}</p>
     <p><strong>Employee Note:</strong> {{ $serviceRequest->employee_note ?? 'N/A' }}</p>
+    <p><strong>Manager Note:</strong> {{ $serviceRequest->manager_note ?? 'N/A' }}</p>
     <hr>
 
     <h2>Update Request Details</h2>

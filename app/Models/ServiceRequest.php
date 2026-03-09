@@ -76,6 +76,7 @@ class ServiceRequest extends Model
         'weight',
         'dimension',
         'employee_note',
+        'manager_note',
         'tracking_id',
         'status',
         'tracking_status',

@@ -40,4 +40,5 @@
             @endforelse
         </tbody>
     </table>
+    {{ $requests->links() }}
 </x-app-layout>

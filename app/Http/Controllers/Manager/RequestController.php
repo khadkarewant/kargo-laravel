@@ -11,7 +11,7 @@ class RequestController extends Controller
 {
     public function index()
     {
-        $serviceRequests = ServiceRequest::latest()->get();
+        $serviceRequests = ServiceRequest::latest()->paginate(2);
 
         return view('manager.requests.index', compact('serviceRequests'));
 
@@ -29,6 +29,7 @@ class RequestController extends Controller
         DB::transaction(function () use ($serviceRequest, $oldStatus, $newStatus) {
             $serviceRequest->update([
                 'status' => ServiceRequest::STATUS_APPROVED,
+                'manager_note' => null,
             ]);
 
             $serviceRequest->activityLogs()->create([
@@ -48,6 +49,10 @@ class RequestController extends Controller
 
     public function markRevisionRequired(ServiceRequest $serviceRequest)
     {
+        $validated = request()->validate([
+            'manager_note' => ['required', 'string'],
+        ]);
+
         if (! $serviceRequest->canManagerMarkRevisionRequired()) {
             return back()->with('error', 'This request cannot be marked as revision required.');
         }
@@ -55,9 +60,10 @@ class RequestController extends Controller
         $oldStatus = $serviceRequest->status;
         $newStatus = ServiceRequest::STATUS_REVISION_REQUIRED;
 
-        DB::transaction(function () use ($serviceRequest, $oldStatus, $newStatus) {
+        DB::transaction(function () use ($serviceRequest, $oldStatus, $newStatus, $validated) {
             $serviceRequest->update([
                 'status' => ServiceRequest::STATUS_REVISION_REQUIRED,
+                'manager_note' => $validated['manager_note'],
             ]);
 
             $serviceRequest->activityLogs()->create([

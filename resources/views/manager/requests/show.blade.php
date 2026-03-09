@@ -30,6 +30,8 @@
 
     <hr>
 
+    <p><strong>Manager Note:</strong> {{ $serviceRequest->manager_note ?? 'N/A' }}</p>
+
     <h2>Employee Processed Details</h2>
 
     <p><strong>Quantity:</strong> {{ $serviceRequest->quantity ?? 'N/A' }}</p>
@@ -55,6 +57,11 @@
         <form action="{{ route('manager.requests.markRevisionRequired', $serviceRequest) }}" method="POST">
             @csrf
             @method('PATCH')
+            <div>
+                <label>Manger Note</label>
+                <textarea name="manager_note" required>{{ old('manager_note', $serviceRequest->manager_note) }}</textarea>
+                @error('manager_note') <div>{{ $message }}</div> @enderror
+            </div>
             <button type="submit">Mark as Revision Required</button>
         </form>
     @endif

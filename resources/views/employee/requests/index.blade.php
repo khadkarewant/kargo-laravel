@@ -23,23 +23,23 @@
             </tr>
         </thead>
 
-    <tbody>
-        @foreach($serviceRequests as $serviceRequest)
-            <tr>
-                <td>{{ $serviceRequest->tracking_id }}</td>
-                <td>{{ $serviceRequest->sender_name }}</td>
-                <td>{{ $serviceRequest->receiver_name }}</td>
-                <td>{{ $serviceRequest->service_type }}</td>
-                <td>{{ $serviceRequest->status }}</td>
-                <td>{{ $serviceRequest->tracking_status ? ucfirst($serviceRequest->tracking_status) : 'Not started' }}</td>
-                <td>
-                    <a href="{{ route('employee.requests.show', $serviceRequest) }}">
-                        View Details
-                    </a>
-                </td>
-            </tr>
-        @endforeach
-    </tbody>
-
+        <tbody>
+            @foreach($serviceRequests as $serviceRequest)
+                <tr>
+                    <td>{{ $serviceRequest->tracking_id }}</td>
+                    <td>{{ $serviceRequest->sender_name }}</td>
+                    <td>{{ $serviceRequest->receiver_name }}</td>
+                    <td>{{ $serviceRequest->service_type }}</td>
+                    <td>{{ $serviceRequest->status }}</td>
+                    <td>{{ $serviceRequest->tracking_status ? ucfirst($serviceRequest->tracking_status) : 'Not started' }}</td>
+                    <td>
+                        <a href="{{ route('employee.requests.show', $serviceRequest) }}">
+                            View Details
+                        </a>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
     </table>
+    {{ $serviceRequests->links() }}
 </x-app-layout>

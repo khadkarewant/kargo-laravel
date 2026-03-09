@@ -40,4 +40,5 @@
             @endforeach
         </tbody>
     </table>
+    {{ $serviceRequests->links() }}
 </x-app-layout>

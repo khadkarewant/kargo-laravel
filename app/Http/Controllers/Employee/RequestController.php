@@ -18,7 +18,9 @@ class RequestController extends Controller
             ServiceRequest::STATUS_COMPLETED,
             ServiceRequest::STATUS_APPROVED,
             ServiceRequest::STATUS_REVISION_REQUIRED,
-        ])->latest()->get();
+        ])
+        ->latest()
+        ->paginate(2);
 
         return view('employee.requests.index', compact('serviceRequests'));
     }

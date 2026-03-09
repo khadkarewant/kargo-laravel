@@ -13,7 +13,7 @@ class ServiceRequestController extends Controller
         $requests = auth()->user()
             ->serviceRequests()
             ->latest()
-            ->get();
+            ->paginate(2);
 
         return view('requests.index', compact('requests'));
     }
