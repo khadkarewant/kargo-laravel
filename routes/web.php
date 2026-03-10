@@ -25,6 +25,7 @@ Route::middleware(['auth'])->group(function () {
 // CUSTOMER ROUTES
 Route::middleware(['auth', 'verified', 'role:customer'])->group(function () {
     Route::get('/requests', [ServiceRequestController::class, 'index'])->name('requests.index');
+    Route::get('/requests/{serviceRequest}', [ServiceRequestController::class, 'show'])->name('requests.show');
     Route::get('/requests/create', [ServiceRequestController::class, 'create'])->name('requests.create');
     Route::post('/requests', [ServiceRequestController::class, 'store'])->name('requests.store');
 });

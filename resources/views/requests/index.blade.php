@@ -32,7 +32,9 @@
                     <td>{{ $r->tracking_status_label }}</td>
                     <td>{{ $r->status_label }}</td>
                     <td>
-                        Chat
+                        <a href="{{ route('requests.show', $r) }}">
+                            View Details
+                        </a>
                     </td>
                 </tr>   
             @empty

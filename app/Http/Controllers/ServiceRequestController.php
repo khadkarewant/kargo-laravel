@@ -48,4 +48,15 @@ class ServiceRequestController extends Controller
             ->route('requests.index')
             ->with('success', 'Service request submitted successfully.');
     }
+
+    public function show(ServiceRequest $serviceRequest)
+    {
+        $this->authorize('view', $serviceRequest);
+
+        $serviceRequest->load([
+            'trackingEvents.updater',
+        ]);
+
+        return view('requests.show', compact('serviceRequest'));
+    }
 }
