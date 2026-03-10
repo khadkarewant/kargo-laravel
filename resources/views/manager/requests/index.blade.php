@@ -28,9 +28,9 @@
                     <td>{{ $serviceRequest->tracking_id }}</td>
                     <td>{{ $serviceRequest->sender_name }}</td>
                     <td>{{ $serviceRequest->receiver_name }}</td>
-                    <td>{{ $serviceRequest->service_type }}</td>
-                    <td>{{ $serviceRequest->status }}</td>
-                    <td>{{ $serviceRequest->tracking_status }}</td>
+                    <td>{{ $serviceRequest->service_type_label }}</td>
+                    <td>{{ $serviceRequest->status_label }}</td>
+                    <td>{{ $serviceRequest->tracking_status_label }}</td>
                     <td>
                         <a href="{{ route('manager.requests.show', $serviceRequest) }}">
                             View Details

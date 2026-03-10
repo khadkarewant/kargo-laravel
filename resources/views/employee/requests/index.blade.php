@@ -29,9 +29,9 @@
                     <td>{{ $serviceRequest->tracking_id }}</td>
                     <td>{{ $serviceRequest->sender_name }}</td>
                     <td>{{ $serviceRequest->receiver_name }}</td>
-                    <td>{{ $serviceRequest->service_type }}</td>
-                    <td>{{ $serviceRequest->status }}</td>
-                    <td>{{ $serviceRequest->tracking_status ? ucfirst($serviceRequest->tracking_status) : 'Not started' }}</td>
+                    <td>{{ $serviceRequest->service_type_label }}</td>
+                    <td>{{ $serviceRequest->status_label }}</td>
+                    <td>{{ $serviceRequest->tracking_status_label }}</td>
                     <td>
                         <a href="{{ route('employee.requests.show', $serviceRequest) }}">
                             View Details

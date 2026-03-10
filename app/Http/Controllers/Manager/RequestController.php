@@ -61,6 +61,7 @@ class RequestController extends Controller
         $newStatus = ServiceRequest::STATUS_REVISION_REQUIRED;
 
         DB::transaction(function () use ($serviceRequest, $oldStatus, $newStatus, $validated) {
+            
             $serviceRequest->update([
                 'status' => ServiceRequest::STATUS_REVISION_REQUIRED,
                 'manager_note' => $validated['manager_note'],

@@ -14,7 +14,8 @@
                 <th>Service Type</th>
                 <th>Sender</th>
                 <th>Receiver</th>
-                <th>Tracking</th>
+                <th>Tracking ID</th>
+                <th>Tracking Status</th>
                 <th>Status</th>
                 <th>Action</th>
             </tr>
@@ -24,18 +25,19 @@
             @forelse($requests as $r)
                 <tr>
                     <td>{{ $r->id }}</td>
-                    <td>{{ $r->service_type }}</td>
+                    <td>{{ $r->service_type_label }}</td>
                     <td>{{ $r->sender_name }}</td>
                     <td>{{ $r->receiver_name }}</td>
                     <td>{{ $r->tracking_id ?? '-' }}</td>
-                    <td>{{ $r->status }}</td>
+                    <td>{{ $r->tracking_status_label }}</td>
+                    <td>{{ $r->status_label }}</td>
                     <td>
                         Chat
                     </td>
                 </tr>   
             @empty
                 <tr>
-                    <td colspan="7">No requests yet</td>
+                    <td colspan="8">No requests yet</td>
                 </tr>
             @endforelse
         </tbody>

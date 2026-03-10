@@ -141,10 +141,7 @@ class ServiceRequest extends Model
 
     public function canEmployeeUpdateTrackingStatus(): bool
     {
-        return in_array($this->status, [
-            self::STATUS_APPROVED,
-            self::STATUS_REVISION_REQUIRED,
-        ], true);
+        return $this->status === self::STATUS_APPROVED;
     }
 
     public function nextTrackingStatus(): ?string
@@ -194,6 +191,23 @@ class ServiceRequest extends Model
     public function isRevisionRequired(): bool
     {
         return $this->status === self::STATUS_REVISION_REQUIRED;
+    }
+
+    public function getStatusLabelAttribute(): string
+    {
+        return ucwords(str_replace('_', ' ', $this->status));
+    }
+
+    public function getTrackingStatusLabelAttribute(): string
+    {
+        return $this->tracking_status
+            ? ucwords(str_replace('_', ' ', $this->tracking_status))
+            : 'Not started';
+    }
+
+    public function getServiceTypeLabelAttribute(): string
+    {
+        return ucwords(str_replace('_', ' ', $this->service_type));
     }
 
     protected static function booted(): void
