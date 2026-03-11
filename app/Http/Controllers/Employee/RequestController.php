@@ -7,6 +7,7 @@ use App\Models\ServiceRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
+use App\Services\NotificationService;
 
 class RequestController extends Controller
 {
@@ -20,7 +21,7 @@ class RequestController extends Controller
             ServiceRequest::STATUS_REVISION_REQUIRED,
         ])
         ->latest()
-        ->paginate(2);
+        ->paginate(10);
 
         return view('employee.requests.index', compact('serviceRequests'));
     }
@@ -44,7 +45,7 @@ class RequestController extends Controller
         return back()->with('success', 'Request details updated successfully.');
     }
 
-    public function updateStatus(Request $request, ServiceRequest $serviceRequest)
+    public function updateStatus(Request $request, ServiceRequest $serviceRequest, NotificationService $notificationService)
     {
         if (! $serviceRequest->canEmployeeUpdateStatus()) {
             return back()->with('error', 'Employee cannot update this request status.');
@@ -76,6 +77,7 @@ class RequestController extends Controller
         $newStatus = $validated['status'];
 
         DB::transaction(function () use ($serviceRequest, $oldStatus, $newStatus) {
+            
             $updateData = [
                 'status' => $newStatus,
             ];
@@ -99,12 +101,21 @@ class RequestController extends Controller
                 'new_value' => $newStatus,
                 'description' => 'Employee updated request status',
             ]);
+
         });
+
+        if ($newStatus === ServiceRequest::STATUS_COMPLETED) {
+            if ($oldStatus === ServiceRequest::STATUS_REVISION_REQUIRED) {
+                $notificationService->notifyRequestRecompleted($serviceRequest);
+            } else {
+                $notificationService->notifyRequestCompleted($serviceRequest);
+            }
+        }
 
         return back()->with('success', 'Request status updated successfully.');
     }
 
-    public function updateTrackingStatus(Request $request, ServiceRequest $serviceRequest)
+    public function updateTrackingStatus(Request $request, ServiceRequest $serviceRequest, NotificationService $notificationService)
     {
         if (! $serviceRequest->canEmployeeUpdateTrackingStatus()) {
             return back()->with('error', 'Employee cannot update tracking status for this request.');
@@ -142,6 +153,8 @@ class RequestController extends Controller
                 'description' => 'Employee updated tracking status',
             ]);
         });
+
+        $notificationService->notifyTrackingUpdated($serviceRequest);
 
         return back()->with('success', 'Tracking status updated successfully.');
     }

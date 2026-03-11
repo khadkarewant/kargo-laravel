@@ -113,6 +113,11 @@ class ServiceRequest extends Model
         return $this->hasMany(ActivityLog::class);
     }
 
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(Notification::class);
+    }
+
     public function canEmployeeUpdateStatus(): bool
     {
         return in_array($this->status, [

@@ -6,18 +6,19 @@ use App\Http\Controllers\Controller;
 use App\Models\ServiceRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Services\NotificationService;
 
 class RequestController extends Controller
 {
     public function index()
     {
-        $serviceRequests = ServiceRequest::latest()->paginate(2);
+        $serviceRequests = ServiceRequest::latest()->paginate(10);
 
         return view('manager.requests.index', compact('serviceRequests'));
 
     }
 
-    public function approve(ServiceRequest $serviceRequest)
+    public function approve(ServiceRequest $serviceRequest, NotificationService $notificationService)
     {
         if (! $serviceRequest->canManagerApprove()) {
             return back()->with('error', 'This request cannot be approved.');
@@ -43,11 +44,13 @@ class RequestController extends Controller
             
         });
 
+        $notificationService->notifyRequestApproved($serviceRequest);
+
         return back()->with('success', 'Request approved successfully.');
 
     }
 
-    public function markRevisionRequired(ServiceRequest $serviceRequest)
+    public function markRevisionRequired(ServiceRequest $serviceRequest, NotificationService $notificationService)
     {
         $validated = request()->validate([
             'manager_note' => ['required', 'string'],
@@ -76,6 +79,9 @@ class RequestController extends Controller
             'description' => 'Manager marked request as revision required',
             ]);
         });
+
+        $notificationService->notifyRevisionRequired($serviceRequest);
+
         return back()->with('success', 'Request marked as revision required.');
     }
 

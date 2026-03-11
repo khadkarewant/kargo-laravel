@@ -15,6 +15,18 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('notifications.index')" :active="request()->routeIs('notifications.*')">
+                        {{ __('Notifications') }}
+                        @php
+                            $unreadCount = Auth::user()->notifications()->whereNull('read_at')->count();
+                        @endphp
+
+                        @if ($unreadCount > 0)
+                            <span class="ml-2 inline-flex items-center justify-center min-w-[1.5rem] px-2 py-0.5 text-xs font-semibold bg-red-600 text-white rounded-full">
+                                {{ $unreadCount }}
+                            </span>
+                        @endif
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -44,7 +56,7 @@
                             <button type="submit" class="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 focus:outline-none transition duration-150 ease-in-out">
                                 {{ __('Log Out') }}
                             </button>
-                            </form>
+                        </form>
                     </x-slot>
                 </x-dropdown>
             </div>
@@ -66,6 +78,12 @@
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('notifications.index')" :active="request()->routeIs('notifications.*')">
+                {{ __('Notifications') }}
+                @if (Auth::user()->notifications()->whereNull('read_at')->count() > 0)
+                    ({{ Auth::user()->notifications()->whereNull('read_at')->count() }})
+                @endif
             </x-responsive-nav-link>
         </div>
 

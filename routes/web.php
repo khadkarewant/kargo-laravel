@@ -5,6 +5,7 @@ use App\Http\Controllers\ServiceRequestController;
 use App\Http\Controllers\Employee\RequestController as EmployeeRequestController;
 use App\Http\Controllers\Manager\RequestController as ManagerRequestController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\NotificationController;
 
 Route::get('/', function () {
     return view('home');
@@ -14,6 +15,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -25,8 +29,8 @@ Route::middleware(['auth'])->group(function () {
 // CUSTOMER ROUTES
 Route::middleware(['auth', 'verified', 'role:customer'])->group(function () {
     Route::get('/requests', [ServiceRequestController::class, 'index'])->name('requests.index');
-    Route::get('/requests/{serviceRequest}', [ServiceRequestController::class, 'show'])->name('requests.show');
     Route::get('/requests/create', [ServiceRequestController::class, 'create'])->name('requests.create');
+    Route::get('/requests/{serviceRequest}', [ServiceRequestController::class, 'show'])->name('requests.show');
     Route::post('/requests', [ServiceRequestController::class, 'store'])->name('requests.store');
 });
 

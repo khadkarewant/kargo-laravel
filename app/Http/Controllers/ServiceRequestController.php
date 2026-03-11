@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ServiceRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use App\Services\NotificationService;
 
 class ServiceRequestController extends Controller
 {
@@ -13,7 +14,7 @@ class ServiceRequestController extends Controller
         $requests = auth()->user()
             ->serviceRequests()
             ->latest()
-            ->paginate(2);
+            ->paginate(10);
 
         return view('requests.index', compact('requests'));
     }
@@ -25,7 +26,7 @@ class ServiceRequestController extends Controller
         return view('requests.create');
     }
     
-    public function store(Request $request)
+    public function store(Request $request, NotificationService $notificationService)
     {
         $this->authorize('create', ServiceRequest::class);
 
@@ -42,7 +43,9 @@ class ServiceRequestController extends Controller
 
         $data['status'] = ServiceRequest::STATUS_REQUEST;
 
-        auth()->user()->serviceRequests()->create($data);
+        $serviceRequest = auth()->user()->serviceRequests()->create($data);
+
+        $notificationService->notifyRequestSubmitted($serviceRequest);
 
         return redirect()
             ->route('requests.index')
