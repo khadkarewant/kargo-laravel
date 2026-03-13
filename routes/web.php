@@ -6,10 +6,13 @@ use App\Http\Controllers\Employee\RequestController as EmployeeRequestController
 use App\Http\Controllers\Manager\RequestController as ManagerRequestController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PublicTrackingController;
 
 Route::get('/', function () {
     return view('home');
 });
+
+Route::get('/track/result', [PublicTrackingController::class, 'show'])->name('tracking.show');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {

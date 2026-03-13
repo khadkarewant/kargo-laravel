@@ -105,7 +105,7 @@ class ServiceRequest extends Model
 
     public function trackingEvents(): HasMany
     {
-        return $this->hasMany(TrackingEvent::class);
+        return $this->hasMany(TrackingEvent::class)->orderBy('created_at', 'asc');
     }
 
     public function activityLogs(): HasMany
