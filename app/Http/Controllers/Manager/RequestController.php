@@ -12,7 +12,9 @@ class RequestController extends Controller
 {
     public function index()
     {
-        $serviceRequests = ServiceRequest::latest()->paginate(10);
+        $serviceRequests = ServiceRequest::where('is_trashed', false)
+        ->latest()
+        ->paginate(10);
 
         return view('manager.requests.index', compact('serviceRequests'));
 
@@ -20,6 +22,10 @@ class RequestController extends Controller
 
     public function approve(ServiceRequest $serviceRequest, NotificationService $notificationService)
     {
+        if ($serviceRequest->isTrashed()) {
+            return back()->with('error', 'This request is inactive.');
+        }
+
         if (! $serviceRequest->canManagerApprove()) {
             return back()->with('error', 'This request cannot be approved.');
         }
@@ -52,6 +58,9 @@ class RequestController extends Controller
 
     public function markRevisionRequired(ServiceRequest $serviceRequest, NotificationService $notificationService)
     {
+        if ($serviceRequest->isTrashed()) {
+            return back()->with('error', 'This request is inactive.');
+        }
         $validated = request()->validate([
             'manager_note' => ['required', 'string'],
         ]);
@@ -83,6 +92,51 @@ class RequestController extends Controller
         $notificationService->notifyRevisionRequired($serviceRequest);
 
         return back()->with('success', 'Request marked as revision required.');
+    }
+
+    public function trash(Request $request, ServiceRequest $serviceRequest)
+    {
+        if ($serviceRequest->isTrashed()) {
+            return back()->with('error', 'This request is already inactive.');
+        }
+
+        $validated = $request->validate([
+            'trash_reason' => ['required', 'string', 'max:1000'],
+        ]);
+
+        $serviceRequest->update([
+            'is_trashed' => true,
+            'trashed_at' => now(),
+            'trashed_by' => auth()->id(),
+            'trash_reason' => $validated['trash_reason'],
+        ]);
+        
+        return back()->with('success', 'Request moved to trash successfully.');
+    }
+
+    public function trashed()
+    {
+        $serviceRequests = ServiceRequest::with('trashedBy')
+            ->where('is_trashed', true)
+            ->latest('trashed_at')
+            ->paginate(1);
+        return view('manager.requests.trashed', compact('serviceRequests'));
+    }
+
+    public function restore(ServiceRequest $serviceRequest) 
+    {
+        if (! $serviceRequest->isTrashed()) {
+            return back()->with('error', 'This request is not inactive.');
+        }
+        
+        $serviceRequest->update([
+            'is_trashed' => false,
+            'trashed_at' => null,
+            'trashed_by' => null,
+            'trash_reason' => null,
+        ]);
+
+        return back()->with('success', 'Request restored successfully.');
     }
 
     public function show(ServiceRequest $serviceRequest)

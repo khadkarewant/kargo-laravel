@@ -70,11 +70,18 @@ Route::middleware(['auth', 'verified', 'role:manager'])
 
         Route::get('/requests', [ManagerRequestController::class, 'index'])->name('requests.index');
 
+        Route::get('requests/trashed', [ManagerRequestController::class, 'trashed'])->name('requests.trashed');
+
         Route::get('/requests/{serviceRequest}', [ManagerRequestController::class, 'show'])->name('requests.show');
 
         Route::patch('/requests/{serviceRequest}/approve', [ManagerRequestController::class, 'approve'])->name('requests.approve');
         
         Route::patch('/requests/{serviceRequest}/revision-required', [ManagerRequestController::class, 'markRevisionRequired'])->name('requests.markRevisionRequired');
+
+        Route::post('/requests/{serviceRequest}/trash', [ManagerRequestController::class, 'trash'])->name('requests.trash');
+
+
+        Route::post('/requests/{serviceRequest}/restore', [ManagerRequestController::class,'restore'])->name('requests.restore');
     });
 
 require __DIR__.'/auth.php';

@@ -29,8 +29,20 @@
                     <td>{{ $r->sender_name }}</td>
                     <td>{{ $r->receiver_name }}</td>
                     <td>{{ $r->tracking_id ?? '-' }}</td>
-                    <td>{{ $r->tracking_status_label }}</td>
-                    <td>{{ $r->status_label }}</td>
+                    <td>
+                        @if ($r->is_trashed)
+                            Inactive
+                        @else
+                            {{ $r->tracking_status_label }}
+                        @endif
+                    </td>
+                    <td>
+                        @if ($r->is_trashed)
+                            Inactive
+                        @else
+                            {{ $r->status_label }}
+                        @endif
+                    </td>
                     <td>
                         <a href="{{ route('requests.show', $r) }}">
                             View Details

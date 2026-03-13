@@ -5,8 +5,20 @@
     <p><strong>Sender:</strong> {{ $serviceRequest->sender_name }}</p>
     <p><strong>Receiver:</strong> {{ $serviceRequest->receiver_name }}</p>
     <p><strong>Service Type:</strong> {{ $serviceRequest->service_type_label }}</p>
-    <p><strong>Status:</strong> {{ $serviceRequest->status_label }}</p>
-    <p><strong>Tracking Status:</strong> {{ $serviceRequest->tracking_status_label }}</p>
+    <p><strong>Status:</strong>
+        @if ($serviceRequest->is_trashed)
+            Inactive
+        @else 
+            {{ $serviceRequest->status_label }}
+        @endif
+    </p>
+    <p><strong>Tracking Status:</strong>
+        @if ($serviceRequest->is_trashed)
+            Inactive
+        @else
+            {{ $serviceRequest->tracking_status_label }}
+        @endif
+    </p>
 
     <p><strong>Sender Country:</strong> {{ $serviceRequest->sender_country ?? 'N/A' }}</p>
     <p><strong>Sender Contact:</strong> {{ $serviceRequest->sender_contact ?? 'N/A' }}</p>

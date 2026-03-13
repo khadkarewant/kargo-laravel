@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\User;
+use App\Models\TrackingEvent;
 
 class ServiceRequest extends Model
 {
@@ -82,11 +84,32 @@ class ServiceRequest extends Model
         'tracking_status',
         'processed_by',
         'processed_at',
+        'is_trashed',
+        'trashed_at',
+        'trashed_by',
+        'trash_reason',
     ];
 
     protected $casts = [
         'processed_at' => 'datetime',
+        'trashed_at' => 'datetime',
+        'is_trashed' => 'boolean',
     ];
+
+    public function trashedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'trashed_by');
+    }
+
+    public function isTrashed(): bool
+    {
+        return (bool) $this->is_trashed;
+    }
+
+    public function canBeWorkedOn(): bool
+    {
+        return ! $this->isTrashed();
+    }
 
     public function customer(): BelongsTo
     {

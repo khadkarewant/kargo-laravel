@@ -58,7 +58,7 @@
             @csrf
             @method('PATCH')
             <div>
-                <label>Manger Note</label>
+                <label>Manager Note</label>
                 <textarea name="manager_note" required>{{ old('manager_note', $serviceRequest->manager_note) }}</textarea>
                 @error('manager_note') <div>{{ $message }}</div> @enderror
             </div>
@@ -66,9 +66,26 @@
         </form>
     @endif
 
-    @if (! $serviceRequest->canManagerApprove() && ! $serviceRequest->canManagerMarkRevisionRequired())
-        <p>No action available</p>
+    @if (! $serviceRequest->isTrashed())
+    <hr>
+
+        <h3>Move Request to Trash</h3>
+
+        <form action="{{ route('manager.requests.trash', $serviceRequest) }}" method="POST">
+            @csrf
+
+            <div>
+                <label for="trash_reason">Reason</label>
+                <textarea name="trash_reason" id="trash_reason" required>{{ old('trash_reason') }}</textarea>
+                @error('trash_reason')
+                    <div>{{ $message }}</div>
+                @enderror
+            </div>
+
+            <button type="submit">Move to Trash</button>
+        </form>
     @endif
+   
 
     <hr>
 

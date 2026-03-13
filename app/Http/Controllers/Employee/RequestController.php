@@ -13,7 +13,9 @@ class RequestController extends Controller
 {
     public function index()
     {
-        $serviceRequests = ServiceRequest::with(['trackingEvents.updater', 'activityLogs.user'])->whereIn('status', [
+        $serviceRequests = ServiceRequest::with(['trackingEvents.updater', 'activityLogs.user'])
+            ->where('is_trashed', false)
+            ->whereIn('status', [
             ServiceRequest::STATUS_REQUEST,
             ServiceRequest::STATUS_PENDING,
             ServiceRequest::STATUS_COMPLETED,
@@ -28,6 +30,10 @@ class RequestController extends Controller
 
     public function update(Request $request, ServiceRequest $serviceRequest)
     {
+        if ($serviceRequest->isTrashed()) {
+            abort(404);
+        }
+
         if (! $serviceRequest->canEmployeeUpdateDetails()) {
             return back()->with('error', 'Employee cannot update this request details.');
         }
@@ -47,6 +53,10 @@ class RequestController extends Controller
 
     public function updateStatus(Request $request, ServiceRequest $serviceRequest, NotificationService $notificationService)
     {
+        if ($serviceRequest->isTrashed()) {
+            abort(404);
+        }
+
         if (! $serviceRequest->canEmployeeUpdateStatus()) {
             return back()->with('error', 'Employee cannot update this request status.');
         }
@@ -117,6 +127,10 @@ class RequestController extends Controller
 
     public function updateTrackingStatus(Request $request, ServiceRequest $serviceRequest, NotificationService $notificationService)
     {
+        if ($serviceRequest->isTrashed()) {
+            abort(404);
+        }
+        
         if (! $serviceRequest->canEmployeeUpdateTrackingStatus()) {
             return back()->with('error', 'Employee cannot update tracking status for this request.');
         }
@@ -161,6 +175,10 @@ class RequestController extends Controller
 
     public function show(ServiceRequest $serviceRequest)
     {
+        if ($serviceRequest->isTrashed()) {
+            abort(404);
+        }
+
         $serviceRequest->load([
             'trackingEvents.updater',
             'activityLogs.user',
