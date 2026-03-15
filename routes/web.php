@@ -17,7 +17,7 @@ Route::get('/', function () {
 
 Route::get('/track/result', [PublicTrackingController::class, 'show'])->name('tracking.show');
 
-Route::middleware(['guest', 'no.manager'])->group(function () {
+Route::middleware(['no.manager'])->group(function () {
     Route::get('/setup/manager', [FirstManagerSetupController::class, 'create'])->name('setup.manager.create');
     Route::post('/setup/manager', [FirstManagerSetupController::class, 'store'])->name('setup.manager.store');
 });
