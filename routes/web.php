@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\FirstManagerSetupController;
+use App\Http\Controllers\StaffController;
+
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ServiceRequestController;
 use App\Http\Controllers\Employee\RequestController as EmployeeRequestController;
@@ -13,6 +16,11 @@ Route::get('/', function () {
 });
 
 Route::get('/track/result', [PublicTrackingController::class, 'show'])->name('tracking.show');
+
+Route::middleware(['guest', 'no.manager'])->group(function () {
+    Route::get('/setup/manager', [FirstManagerSetupController::class, 'create'])->name('setup.manager.create');
+    Route::post('/setup/manager', [FirstManagerSetupController::class, 'store'])->name('setup.manager.store');
+});
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
@@ -80,8 +88,11 @@ Route::middleware(['auth', 'verified', 'role:manager'])
 
         Route::post('/requests/{serviceRequest}/trash', [ManagerRequestController::class, 'trash'])->name('requests.trash');
 
-
         Route::post('/requests/{serviceRequest}/restore', [ManagerRequestController::class,'restore'])->name('requests.restore');
+
+        Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
+        Route::get('/staff/create', [StaffController::class, 'create'])->name('staff.create');
+        Route::post('/staff', [StaffController::class, 'store'])->name('staff.store');
     });
 
 require __DIR__.'/auth.php';
