@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\FirstManagerSetupController;
-use App\Http\Controllers\StaffController;
+use App\Http\Controllers\Manager\StaffController;
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ServiceRequestController;
