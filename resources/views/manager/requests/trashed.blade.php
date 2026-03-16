@@ -1,62 +1,157 @@
 <x-app-layout>
-    <h1>Inactive Requests</h1>
+    <x-slot name="header">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <p class="text-sm font-medium text-orange-600">Manager Workspace</p>
+                <h2 class="text-2xl font-bold tracking-tight text-slate-900">
+                    Inactive Requests
+                </h2>
+            </div>
 
-    @if (session('success'))
-        <p>{{ session('success') }}</p>
-    @endif
+            <a href="{{ route('manager.requests.index') }}"
+               class="inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                Back to Active Requests
+            </a>
+        </div>
+    </x-slot>
 
-    @if (session('error'))
-        <p>{{ session('error') }}</p>
-    @endif
+    <div class="py-8">
+        <div class="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
+            @if (session('success'))
+                <div class="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-medium text-green-700">
+                    {{ session('success') }}
+                </div>
+            @endif
 
-    <p>
-        <a href="{{ route('manager.requests.index') }}">Back to Active Requests</a>
-    </p>
+            @if (session('error'))
+                <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+                    {{ session('error') }}
+                </div>
+            @endif
 
-    <table border="1" cellpadding="10">
-        <thead>
-            <tr>
-                <th>Tracking ID</th>
-                <th>Sender</th>
-                <th>Receiver</th>
-                <th>Service Type</th>
-                <th>Status</th>
-                <th>Trash Reason</th>
-                <th>Trashed By</th>
-                <th>Trashed At</th>
-                <th>Action</th>
-            </tr>
-        </thead>
+            <section class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+                <div class="border-b border-slate-200 px-6 py-4">
+                    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-slate-900">Inactive / Trashed Requests</h3>
+                            <p class="mt-1 text-sm text-slate-600">
+                                Review requests moved out of the active workflow and restore them if needed.
+                            </p>
+                        </div>
+                    </div>
+                </div>
 
-        <tbody>
-            @forelse ($serviceRequests as $serviceRequest)
-                <tr>
-                    <td>{{ $serviceRequest->tracking_id }}</td>
-                    <td>{{ $serviceRequest->sender_name }}</td>
-                    <td>{{ $serviceRequest->receiver_name }}</td>
-                    <td>{{ $serviceRequest->service_type_label }}</td>
-                    <td>Inactive</td>
-                    <td>{{ $serviceRequest->trash_reason }}</td>
-                    <td>{{ $serviceRequest->trashedBy->name ?? 'N/A' }}</td>
-                    <td>{{ $serviceRequest->trashed_at?->format('Y-m-d h:i A') ?? 'N/A' }}</td>
-                    <td>
-                        <a href="{{ route('manager.requests.show', $serviceRequest) }}">
-                            View Details
-                        </a>
+                @if($serviceRequests->count())
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-slate-200">
+                            <thead class="bg-slate-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                        Tracking ID
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                        Sender
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                        Receiver
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                        Service Type
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                        Status
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                        Trash Reason
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                        Trashed By
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                        Trashed At
+                                    </th>
+                                    <th class="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                        Action
+                                    </th>
+                                </tr>
+                            </thead>
 
-                        <form action="{{ route('manager.requests.restore', $serviceRequest) }}" method="POST" style="display:inline;">
-                            @csrf
-                            <button type="submit" onclick="return confirm('Restore this request')">Restore</button>
-                        </form>
-                    </td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="9">No inactive requests found.</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
+                            <tbody class="divide-y divide-slate-200 bg-white">
+                                @forelse ($serviceRequests as $serviceRequest)
+                                    <tr class="hover:bg-slate-50">
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm font-semibold text-slate-900">
+                                            {{ $serviceRequest->tracking_id }}
+                                        </td>
 
-    {{ $serviceRequests->links() }}
+                                        <td class="px-6 py-4 text-sm text-slate-700">
+                                            {{ $serviceRequest->sender_name }}
+                                        </td>
+
+                                        <td class="px-6 py-4 text-sm text-slate-700">
+                                            {{ $serviceRequest->receiver_name }}
+                                        </td>
+
+                                        <td class="px-6 py-4 text-sm text-slate-700">
+                                            {{ $serviceRequest->service_type_label }}
+                                        </td>
+
+                                        <td class="px-6 py-4 text-sm">
+                                            <span class="inline-flex items-center rounded-full bg-slate-200 px-3 py-1 text-xs font-semibold text-slate-700">
+                                                Inactive
+                                            </span>
+                                        </td>
+
+                                        <td class="px-6 py-4 text-sm text-slate-700">
+                                            {{ $serviceRequest->trash_reason }}
+                                        </td>
+
+                                        <td class="px-6 py-4 text-sm text-slate-700">
+                                            {{ $serviceRequest->trashedBy->name ?? 'N/A' }}
+                                        </td>
+
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-700">
+                                            {{ $serviceRequest->trashed_at?->format('Y-m-d h:i A') ?? 'N/A' }}
+                                        </td>
+
+                                        <td class="px-6 py-4">
+                                            <div class="flex flex-col items-end gap-2">
+                                                <a href="{{ route('manager.requests.show', $serviceRequest) }}"
+                                                   class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-900">
+                                                    View Details
+                                                </a>
+
+                                                <form action="{{ route('manager.requests.restore', $serviceRequest) }}" method="POST">
+                                                    @csrf
+                                                    <button type="submit"
+                                                            onclick="return confirm('Restore this request')"
+                                                            class="inline-flex items-center rounded-lg bg-orange-500 px-3 py-2 text-sm font-semibold text-white transition hover:bg-orange-600">
+                                                        Restore
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="9" class="px-6 py-12 text-center">
+                                            <div class="mx-auto max-w-md">
+                                                <h3 class="text-lg font-semibold text-slate-900">No inactive requests found</h3>
+                                                <p class="mt-2 text-sm text-slate-600">
+                                                    There are currently no requests in the inactive workflow.
+                                                </p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="border-t border-slate-200 px-6 py-4">
+                        {{ $serviceRequests->links() }}
+                    </div>
+                @endif
+            </section>
+        </div>
+    </div>
 </x-app-layout>
