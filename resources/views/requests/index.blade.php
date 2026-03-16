@@ -1,60 +1,144 @@
 <x-app-layout>
+    <x-slot name="header">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <p class="text-sm font-medium text-orange-600">Customer Requests</p>
+                <h2 class="text-2xl font-bold tracking-tight text-slate-900">
+                    Service Requests
+                </h2>
+            </div>
 
+            <a href="{{ route('requests.create') }}"
+               class="inline-flex items-center justify-center rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-orange-600">
+                Create New Request
+            </a>
+        </div>
+    </x-slot>
 
-    <h1>Service Requests</h1>
+    <div class="py-8">
+        <div class="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
+            <section class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+                <div class="border-b border-slate-200 px-6 py-4">
+                    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-slate-900">Your Submitted Requests</h3>
+                            <p class="mt-1 text-sm text-slate-600">
+                                Review service requests, tracking progress, and current approval status.
+                            </p>
+                        </div>
+                    </div>
+                </div>
 
-    <hr>
+                @if($requests->count())
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-slate-200">
+                            <thead class="bg-slate-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                        ID
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                        Service Type
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                        Sender
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                        Receiver
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                        Tracking ID
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                        Tracking Status
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                        Request Status
+                                    </th>
+                                    <th class="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                        Action
+                                    </th>
+                                </tr>
+                            </thead>
 
-    <a href="{{ route('requests.create') }}">Create New Request</a>
+                            <tbody class="divide-y divide-slate-200 bg-white">
+                                @foreach($requests as $r)
+                                    <tr class="hover:bg-slate-50">
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-slate-900">
+                                            #{{ $r->id }}
+                                        </td>
 
-    <table border="1" cellpadding="6">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Service Type</th>
-                <th>Sender</th>
-                <th>Receiver</th>
-                <th>Tracking ID</th>
-                <th>Tracking Status</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-        </thead>
+                                        <td class="px-6 py-4 text-sm text-slate-700">
+                                            {{ $r->service_type_label }}
+                                        </td>
 
-        <tbody>
-            @forelse($requests as $r)
-                <tr>
-                    <td>{{ $r->id }}</td>
-                    <td>{{ $r->service_type_label }}</td>
-                    <td>{{ $r->sender_name }}</td>
-                    <td>{{ $r->receiver_name }}</td>
-                    <td>{{ $r->tracking_id ?? '-' }}</td>
-                    <td>
-                        @if ($r->is_trashed)
-                            Inactive
-                        @else
-                            {{ $r->tracking_status_label }}
-                        @endif
-                    </td>
-                    <td>
-                        @if ($r->is_trashed)
-                            Inactive
-                        @else
-                            {{ $r->status_label }}
-                        @endif
-                    </td>
-                    <td>
-                        <a href="{{ route('requests.show', $r) }}">
-                            View Details
-                        </a>
-                    </td>
-                </tr>   
-            @empty
-                <tr>
-                    <td colspan="8">No requests yet</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
-    {{ $requests->links() }}
+                                        <td class="px-6 py-4 text-sm text-slate-700">
+                                            {{ $r->sender_name }}
+                                        </td>
+
+                                        <td class="px-6 py-4 text-sm text-slate-700">
+                                            {{ $r->receiver_name }}
+                                        </td>
+
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-700">
+                                            {{ $r->tracking_id ?? '-' }}
+                                        </td>
+
+                                        <td class="px-6 py-4 text-sm">
+                                            @if ($r->is_trashed)
+                                                <span class="inline-flex items-center rounded-full bg-slate-200 px-3 py-1 text-xs font-semibold text-slate-700">
+                                                    Inactive
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+                                                    {{ $r->tracking_status_label }}
+                                                </span>
+                                            @endif
+                                        </td>
+
+                                        <td class="px-6 py-4 text-sm">
+                                            @if ($r->is_trashed)
+                                                <span class="inline-flex items-center rounded-full bg-slate-200 px-3 py-1 text-xs font-semibold text-slate-700">
+                                                    Inactive
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center rounded-full bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-700 ring-1 ring-orange-200">
+                                                    {{ $r->status_label }}
+                                                </span>
+                                            @endif
+                                        </td>
+
+                                        <td class="px-6 py-4 text-right">
+                                            <a href="{{ route('requests.show', $r) }}"
+                                               class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-900">
+                                                View Details
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="border-t border-slate-200 px-6 py-4">
+                        {{ $requests->links() }}
+                    </div>
+                @else
+                    <div class="px-6 py-12 text-center">
+                        <div class="mx-auto max-w-md">
+                            <h3 class="text-lg font-semibold text-slate-900">No requests yet</h3>
+                            <p class="mt-2 text-sm text-slate-600">
+                                You have not submitted any service requests yet. Start by creating your first request.
+                            </p>
+
+                            <a href="{{ route('requests.create') }}"
+                               class="mt-6 inline-flex items-center justify-center rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-orange-600">
+                                Create New Request
+                            </a>
+                        </div>
+                    </div>
+                @endif
+            </section>
+        </div>
+    </div>
 </x-app-layout>
