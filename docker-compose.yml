@@ -9,6 +9,7 @@ services:
     working_dir: /var/www/html
     depends_on:
       - db
+      - mailpit
 
   db:
     image: mysql:8.0
@@ -21,6 +22,14 @@ services:
       - "3307:3306"
     volumes:
       - db_data:/var/lib/mysql
+
+  mailpit:
+    image: axllent/mailpit
+    container_name: kargo_mailpit
+    restart: unless-stopped
+    ports:
+      - "8025:8025"
+      - "1025:1025"
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
