@@ -11,21 +11,16 @@ use Illuminate\Support\Str;
  */
 class UserFactory extends Factory
 {
-    /**
-     * The current password being used by the factory.
-     */
     protected static ?string $password;
 
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
+        $first = fake()->firstName();
+        $last = fake()->lastName();
+
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
+            'name' => $first . ' ' . $last,
+            'email' => Str::lower($first . '.' . $last . fake()->unique()->numberBetween(10, 999) . '@kargo-demo.test'),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
@@ -33,9 +28,6 @@ class UserFactory extends Factory
         ];
     }
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     */
     public function unverified(): static
     {
         return $this->state(fn (array $attributes) => [
@@ -60,6 +52,33 @@ class UserFactory extends Factory
     public function manager(): static
     {
         return $this->state(fn (array $attributes) => [
+            'role' => 'manager',
+        ]);
+    }
+
+    public function demoCustomer(?string $name = null, ?string $email = null): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'name' => $name ?? 'Demo Customer',
+            'email' => $email ?? 'customer@kargo.test',
+            'role' => 'customer',
+        ]);
+    }
+
+    public function demoEmployee(?string $name = null, ?string $email = null): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'name' => $name ?? 'Operations Staff',
+            'email' => $email ?? 'employee@kargo.test',
+            'role' => 'employee',
+        ]);
+    }
+
+    public function demoManager(?string $name = null, ?string $email = null): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'name' => $name ?? 'Operations Manager',
+            'email' => $email ?? 'manager@kargo.test',
             'role' => 'manager',
         ]);
     }
