@@ -36,6 +36,108 @@
                     </div>
                 </div>
 
+                <form method="GET" action="{{ route('employee.requests.index') }}" class="border-b border-slate-200 px-6 py-4">
+                    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                        <div>
+                            <label for="status" class="block text-sm font-medium text-slate-700">Status</label>
+                            <select name="status" id="status" class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+                                <option value="">All</option>
+                                @foreach (\App\Models\ServiceRequest::STATUSES as $status)
+                                    <option value="{{ $status }}" @selected(request('status') === $status)>
+                                        {{ ucwords(str_replace('_', ' ', $status)) }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="tracking_status" class="block text-sm font-medium text-slate-700">Tracking Status</label>
+                            <select name="tracking_status" id="tracking_status" class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+                                <option value="">All</option>
+                                @foreach (\App\Models\ServiceRequest::TRACKING_STATUSES as $trackingStatus)
+                                    <option value="{{ $trackingStatus }}" @selected(request('tracking_status') === $trackingStatus)>
+                                        {{ ucwords(str_replace('_', ' ', $trackingStatus)) }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="service_type" class="block text-sm font-medium text-slate-700">Service Type</label>
+                            <select name="service_type" id="service_type" class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+                                <option value="">All</option>
+                                @foreach (\App\Models\ServiceRequest::SERVICE_TYPES as $serviceType)
+                                    <option value="{{ $serviceType }}" @selected(request('service_type') === $serviceType)>
+                                        {{ ucwords(str_replace('_', ' ', $serviceType)) }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="tracking_id" class="block text-sm font-medium text-slate-700">Tracking ID</label>
+                            <input
+                                type="text"
+                                name="tracking_id"
+                                id="tracking_id"
+                                value="{{ request('tracking_id') }}"
+                                class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                                placeholder="Search tracking ID"
+                            >
+                        </div>
+
+                        <div>
+                            <label for="customer_name" class="block text-sm font-medium text-slate-700">Customer Name</label>
+                            <input
+                                type="text"
+                                name="customer_name"
+                                id="customer_name"
+                                value="{{ request('customer_name') }}"
+                                class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                                placeholder="Search customer"
+                            >
+                        </div>
+
+                        <div>
+                            <label for="from" class="block text-sm font-medium text-slate-700">From Date</label>
+                            <input
+                                type="date"
+                                name="from"
+                                id="from"
+                                value="{{ request('from') }}"
+                                class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                            >
+                        </div>
+
+                        <div>
+                            <label for="to" class="block text-sm font-medium text-slate-700">To Date</label>
+                            <input
+                                type="date"
+                                name="to"
+                                id="to"
+                                value="{{ request('to') }}"
+                                class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="mt-4 flex flex-wrap gap-3">
+                        <button
+                            type="submit"
+                            class="inline-flex items-center rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600"
+                        >
+                            Apply Filters
+                        </button>
+
+                        <a
+                            href="{{ route('employee.requests.index') }}"
+                            class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                        >
+                            Reset
+                        </a>
+                    </div>
+                </form>
+
                 @if($serviceRequests->count())
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-slate-200">

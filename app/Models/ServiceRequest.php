@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\User;
 use App\Models\TrackingEvent;
+use Illuminate\Database\Eloquent\Builder;
 
 class ServiceRequest extends Model
 {
@@ -66,6 +67,74 @@ class ServiceRequest extends Model
         self::SERVICE_EXPORT,
     ];
 
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('is_trashed', false);
+    }
+
+    public function scopeInactive(Builder $query): Builder
+    {
+        return $query->where('is_trashed', true);
+    }
+
+    public function scopeFilterStatus(Builder $query, ?string $status): Builder
+    {
+        return $query->when(
+            filled($status),
+            fn (Builder $q) => $q->where('status', $status)
+        );
+    }
+
+    public function scopeFilterTrackingStatus(Builder $query, ?string $trackingStatus): Builder
+    {
+        return $query->when(
+            filled($trackingStatus),
+            fn (Builder $q) => $q->where('tracking_status', $trackingStatus)
+        );
+    }
+
+    public function scopeFilterServiceType(Builder $query, ?string $serviceType): Builder
+    {
+        return $query->when(
+            filled($serviceType),
+            fn (Builder $q) => $q->where('service_type', $serviceType)
+        );
+    }
+
+    public function scopeFilterTrackingId(Builder $query, ?string $trackingId): Builder
+    {
+        return $query->when(
+            filled($trackingId),
+            fn (Builder $q) => $q->where('tracking_id', 'like', '%' . trim($trackingId) . '%')
+        );
+    }
+
+    public function scopeFilterCustomerName(Builder $query, ?string $customerName): Builder
+    {
+        return $query->when(
+            filled($customerName),
+            fn (Builder $q) => $q->whereHas('customer', function (Builder $customerQuery) use ($customerName) {
+                $customerQuery->where('name', 'like', '%' . trim($customerName) . '%');
+            })
+        );
+    }
+
+    public function scopeFilterCreatedFrom(Builder $query, ?string $from): Builder
+    {
+        return $query->when(
+            filled($from),
+            fn (Builder $q) => $q->whereDate('created_at', '>=', $from)
+        );
+    }
+
+    public function scopeFilterCreatedTo(Builder $query, ?string $to): Builder
+    {
+        return $query->when(
+            filled($to),
+            fn (Builder $q) => $q->whereDate('created_at', '<=', $to)
+        );
+    }
+    
     protected $fillable = [
         'user_id',
         'service_type',

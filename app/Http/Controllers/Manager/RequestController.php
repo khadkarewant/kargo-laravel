@@ -10,14 +10,22 @@ use App\Services\NotificationService;
 
 class RequestController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $serviceRequests = ServiceRequest::where('is_trashed', false)
-        ->latest()
-        ->paginate(10);
+        $serviceRequests = ServiceRequest::with('customer')
+            ->active()
+            ->filterStatus($request->string('status')->value())
+            ->filterTrackingStatus($request->string('tracking_status')->value())
+            ->filterServiceType($request->string('service_type')->value())
+            ->filterTrackingId($request->string('tracking_id')->value())
+            ->filterCustomerName($request->string('customer_name')->value())
+            ->filterCreatedFrom($request->string('from')->value())
+            ->filterCreatedTo($request->string('to')->value())
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
 
         return view('manager.requests.index', compact('serviceRequests'));
-
     }
 
     public function approve(ServiceRequest $serviceRequest, NotificationService $notificationService)

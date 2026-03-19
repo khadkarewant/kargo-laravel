@@ -11,19 +11,31 @@ use App\Services\NotificationService;
 
 class RequestController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $serviceRequests = ServiceRequest::with(['trackingEvents.updater', 'activityLogs.user'])
-            ->where('is_trashed', false)
+        $serviceRequests = ServiceRequest::with([
+                'customer',
+                'trackingEvents.updater',
+                'activityLogs.user',
+            ])
+            ->active()
             ->whereIn('status', [
-            ServiceRequest::STATUS_REQUEST,
-            ServiceRequest::STATUS_PENDING,
-            ServiceRequest::STATUS_COMPLETED,
-            ServiceRequest::STATUS_APPROVED,
-            ServiceRequest::STATUS_REVISION_REQUIRED,
-        ])
-        ->latest()
-        ->paginate(10);
+                ServiceRequest::STATUS_REQUEST,
+                ServiceRequest::STATUS_PENDING,
+                ServiceRequest::STATUS_COMPLETED,
+                ServiceRequest::STATUS_APPROVED,
+                ServiceRequest::STATUS_REVISION_REQUIRED,
+            ])
+            ->filterStatus($request->string('status')->value())
+            ->filterTrackingStatus($request->string('tracking_status')->value())
+            ->filterServiceType($request->string('service_type')->value())
+            ->filterTrackingId($request->string('tracking_id')->value())
+            ->filterCustomerName($request->string('customer_name')->value())
+            ->filterCreatedFrom($request->string('from')->value())
+            ->filterCreatedTo($request->string('to')->value())
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
 
         return view('employee.requests.index', compact('serviceRequests'));
     }
