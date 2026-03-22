@@ -71,9 +71,7 @@ Route::middleware(['auth', 'verified', 'role:manager'])
     ->prefix('manager')
     ->name('manager.')
     ->group(function () {
-        Route::get('/dashboard', function () {
-            return view('manager.dashboard');
-        })->name('dashboard');
+        Route::get('/dashboard', [ManagerRequestController::class, 'dashboard'])->name('dashboard');
 
         Route::get('/requests', [ManagerRequestController::class, 'index'])->name('requests.index');
 

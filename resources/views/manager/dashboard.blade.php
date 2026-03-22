@@ -27,15 +27,15 @@
             <section class="grid gap-6 md:grid-cols-4">
                 <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                     <p class="text-sm font-medium text-slate-500">Total Requests</p>
-                    <p class="mt-3 text-3xl font-bold text-slate-900">--</p>
+                    <p class="mt-3 text-3xl font-bold text-slate-900">{{ $totalRequests }}</p>
                     <p class="mt-2 text-sm text-slate-600">
-                        Overall service requests under management review.
+                        Total Service requests.
                     </p>
                 </div>
 
                 <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                     <p class="text-sm font-medium text-slate-500">Pending Review</p>
-                    <p class="mt-3 text-3xl font-bold text-slate-900">--</p>
+                    <p class="mt-3 text-3xl font-bold text-slate-900">{{ $pendingReview }}</p>
                     <p class="mt-2 text-sm text-slate-600">
                         Requests currently waiting for manager-side decision.
                     </p>
@@ -43,7 +43,7 @@
 
                 <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                     <p class="text-sm font-medium text-slate-500">Active Staff</p>
-                    <p class="mt-3 text-3xl font-bold text-slate-900">--</p>
+                    <p class="mt-3 text-3xl font-bold text-slate-900">{{ $activeStaff }}</p>
                     <p class="mt-2 text-sm text-slate-600">
                         Employees available in the operational workflow.
                     </p>
@@ -51,7 +51,7 @@
 
                 <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                     <p class="text-sm font-medium text-slate-500">Inactive Requests</p>
-                    <p class="mt-3 text-3xl font-bold text-slate-900">--</p>
+                    <p class="mt-3 text-3xl font-bold text-slate-900">{{ $inactiveRequests }}</p>
                     <p class="mt-2 text-sm text-slate-600">
                         Requests moved to inactive or trash workflow.
                     </p>
@@ -75,6 +75,52 @@
                             </a>
                         </div>
                     </div>
+                    
+                    @if($recentRequests->isNotEmpty())
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-slate-200">
+                                <thead class="bg-slate-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Tracking ID</th>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Customer</th>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Service</th>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Status</th>
+                                        <th class="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-200 bg-white">
+                                    @foreach($recentRequests as $serviceRequest)
+                                        <tr class="hover:bg-slate-50">
+                                            <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-slate-900">
+                                                {{ $serviceRequest->tracking_id }}
+                                            </td>
+                                            <td class="px-6 py-4 text-sm text-slate-700">
+                                                {{ $serviceRequest->customer->name }}
+                                            </td>
+                                            <td class="px-6 py-4 text-sm text-slate-700">
+                                                {{ $serviceRequest->service_type_label }}
+                                            </td>
+                                            <td class="px-6 py-4 text-sm">
+                                                <span class="inline-flex items-center rounded-full bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-700 ring-1 ring-orange-200">
+                                                    {{ $serviceRequest->status_label }}
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 text-right">
+                                                <a href="{{ route('manager.requests.show', $serviceRequest) }}"
+                                                class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                                                    Open
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="px-6 py-12 text-center">
+                            <p class="text-sm font-medium text-slate-700">No active requests in the queue.</p>
+                        </div>
+                    @endif
 
                     <div class="p-6">
                         <div class="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center">

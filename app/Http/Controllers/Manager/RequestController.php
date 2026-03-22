@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Manager;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Models\ServiceRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -10,6 +11,44 @@ use App\Services\NotificationService;
 
 class RequestController extends Controller
 {
+
+    public function dashboard()
+    {
+        $base = ServiceRequest::active()
+            ->whereIn('status', [
+                ServiceRequest::STATUS_REQUEST,
+                ServiceRequest::STATUS_PENDING,
+                ServiceRequest::STATUS_COMPLETED,
+                ServiceRequest::STATUS_APPROVED,
+                ServiceRequest::STATUS_REVISION_REQUIRED,
+            ]);
+
+        $totalRequests = (clone $base)->count();
+
+        $pendingReview = (clone $base)
+            ->whereIn('status', [
+                ServiceRequest::STATUS_COMPLETED,
+            ])->count();
+
+        $inactiveRequests = ServiceRequest::inactive()->count();
+
+        $activeStaff = User::whereIn('role', ['manager', 'employee'])->count();
+
+        $recentRequests = (clone $base)
+            ->with('customer')
+            ->latest('id')
+            ->limit(5)
+            ->get();
+
+        return view('manager.dashboard', compact(
+            'totalRequests',
+            'pendingReview',
+            'inactiveRequests',
+            'activeStaff',
+            'recentRequests',
+        ));
+    }
+
     public function index(Request $request)
     {
         $serviceRequests = ServiceRequest::with('customer')
