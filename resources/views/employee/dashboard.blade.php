@@ -10,7 +10,7 @@
 
             <a href="{{ route('employee.requests.index') }}"
                class="inline-flex items-center justify-center rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-orange-600">
-                View Assigned Requests
+                View All Requests
             </a>
         </div>
     </x-slot>
@@ -20,25 +20,25 @@
             <section class="grid gap-6 md:grid-cols-3">
                 <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                     <p class="text-sm font-medium text-slate-500">Assigned Requests</p>
-                    <p class="mt-3 text-3xl font-bold text-slate-900">--</p>
+                    <p class="mt-3 text-3xl font-bold text-slate-900">{{ $totalAssigned }}</p>
                     <p class="mt-2 text-sm text-slate-600">
-                        Requests currently assigned for your handling.
+                        Total active requests in the operational queue.
                     </p>
                 </div>
 
                 <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                     <p class="text-sm font-medium text-slate-500">Pending Action</p>
-                    <p class="mt-3 text-3xl font-bold text-slate-900">--</p>
+                    <p class="mt-3 text-3xl font-bold text-slate-900">{{ $pendingAction }}</p>
                     <p class="mt-2 text-sm text-slate-600">
-                        Requests waiting for update, processing, or revision work.
+                        Requests awaiting processing, update, or revision work.
                     </p>
                 </div>
 
                 <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                     <p class="text-sm font-medium text-slate-500">Processed Requests</p>
-                    <p class="mt-3 text-3xl font-bold text-slate-900">--</p>
+                    <p class="mt-3 text-3xl font-bold text-slate-900">{{ $processed }}</p>
                     <p class="mt-2 text-sm text-slate-600">
-                        Requests you have already moved forward in the workflow.
+                        Requests completed or approved and moved forward.
                     </p>
                 </div>
             </section>
@@ -61,14 +61,52 @@
                         </div>
                     </div>
 
-                    <div class="p-6">
-                        <div class="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
-                            <p class="text-sm font-medium text-slate-700">No request summary added yet.</p>
-                            <p class="mt-2 text-sm text-slate-500">
-                                We’ll connect this dashboard to real employee request data later.
-                            </p>
+                    @if($recentRequests->isNotEmpty())
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-slate-200">
+                                <thead class="bg-slate-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Tracking ID</th>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Customer</th>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Service</th>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Status</th>
+                                        <th class="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-200 bg-white">
+                                    @foreach($recentRequests as $serviceRequest)
+                                        <tr class="hover:bg-slate-50">
+                                            <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-slate-900">
+                                                {{ $serviceRequest->tracking_id }}
+                                            </td>
+                                            <td class="px-6 py-4 text-sm text-slate-700">
+                                                {{ $serviceRequest->customer->name }}
+                                            </td>
+                                            <td class="px-6 py-4 text-sm text-slate-700">
+                                                {{ $serviceRequest->service_type_label }}
+                                            </td>
+                                            <td class="px-6 py-4 text-sm">
+                                                <span class="inline-flex items-center rounded-full bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-700 ring-1 ring-orange-200">
+                                                    {{ $serviceRequest->status_label }}
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 text-right">
+                                                <a href="{{ route('employee.requests.show', $serviceRequest) }}"
+                                                class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                                                    Open
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
-                    </div>
+                    @else
+                        <div class="px-6 py-12 text-center">
+                            <p class="text-sm font-medium text-slate-700">No active requests in the queue.</p>
+                        </div>
+                    @endif
+
                 </div>
 
                 <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">

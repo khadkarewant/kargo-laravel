@@ -11,6 +11,46 @@ use App\Services\NotificationService;
 
 class RequestController extends Controller
 {
+    public function dashboard()
+    {
+        $base = ServiceRequest::active()
+            ->whereIn('status', [
+                ServiceRequest::STATUS_REQUEST,
+                ServiceRequest::STATUS_PENDING,
+                ServiceRequest::STATUS_COMPLETED,
+                ServiceRequest::STATUS_APPROVED,
+                ServiceRequest::STATUS_REVISION_REQUIRED,
+            ]);
+
+        $totalAssigned = (clone $base)->count();
+
+        $pendingAction = (clone $base)
+            ->whereIn('status', [
+                ServiceRequest::STATUS_REQUEST,
+                ServiceRequest::STATUS_PENDING,
+                ServiceRequest::STATUS_REVISION_REQUIRED,
+            ])->count();
+
+        $processed = (clone $base)
+            ->whereIn('status', [
+                ServiceRequest::STATUS_COMPLETED,
+                ServiceRequest::STATUS_APPROVED,
+            ])->count();
+
+        $recentRequests = (clone $base)
+            ->with('customer')
+            ->latest('id')
+            ->limit(5)
+            ->get();
+
+        return view('employee.dashboard', compact(
+            'totalAssigned',
+            'pendingAction',
+            'processed',
+            'recentRequests',
+        ));
+    }
+
     public function index(Request $request)
     {
         $serviceRequests = ServiceRequest::with([

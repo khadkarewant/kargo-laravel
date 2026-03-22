@@ -50,11 +50,10 @@ Route::middleware(['auth', 'verified', 'role:employee'])
     ->prefix('employee')
     ->name('employee.')
     ->group(function () {
-        Route::get('/dashboard', function () {
-            return view('employee.dashboard');
-        })->name('dashboard');
+        Route::get('/dashboard', [EmployeeRequestController::class, 'dashboard'])->name('dashboard');
 
         Route::get('/requests', [EmployeeRequestController::class, 'index'])->name('requests.index');
+
         Route::get('/requests/{serviceRequest}', [EmployeeRequestController::class, 'show'])->name('requests.show');
         
         // save employee processing details
