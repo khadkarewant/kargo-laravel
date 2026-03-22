@@ -127,7 +127,7 @@ class RequestController extends Controller
         $serviceRequests = ServiceRequest::with('trashedBy')
             ->where('is_trashed', true)
             ->latest('trashed_at')
-            ->paginate(1);
+            ->paginate(10);
         return view('manager.requests.trashed', compact('serviceRequests'));
     }
 
