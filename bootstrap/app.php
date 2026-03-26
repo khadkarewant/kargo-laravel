@@ -16,7 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'no.manager' => \App\Http\Middleware\EnsureNoManagerExists::class,
             'manager' => \App\Http\Middleware\EnsureUserIsManager::class,
         ]);
+        $middleware->appendToGroup('web', \App\Http\Middleware\EnsureUserIsActive::class);
     })
+
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();

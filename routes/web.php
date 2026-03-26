@@ -91,6 +91,8 @@ Route::middleware(['auth', 'verified', 'role:manager'])
         Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
         Route::get('/staff/create', [StaffController::class, 'create'])->name('staff.create');
         Route::post('/staff', [StaffController::class, 'store'])->name('staff.store');
+        Route::get('/staff/{user}', [StaffController::class, 'show'])->name('staff.show');
+        Route::patch('/staff/{user}/toggle', [StaffController::class, 'toggle'])->name('staff.toggle');
     });
 
 require __DIR__.'/auth.php';

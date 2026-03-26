@@ -6,8 +6,6 @@ use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
 
-use Illuminate\Validation\Rule;
-
 use App\Models\User;
 
 class StaffController extends Controller
@@ -43,5 +41,32 @@ class StaffController extends Controller
 
         return redirect()->route('manager.staff.index')
             ->with('success', 'Employee account created successfully.');
+    }
+
+    public function show(User $user)
+    {
+        if ($user->role === 'customer') {
+            abort(404);
+        }
+
+        return view('manager.staff.show', compact('user'));
+    }
+
+    public function toggle(User $user)
+    {
+        if ($user->id === auth()->id()) {
+            abort(403, 'You cannot deactivate your own account.');
+        }
+
+        if ($user->role === 'manager') {
+            abort(403, 'Manager accounts cannot be deactivated this way.');
+        }
+
+        $user->update(['is_active' => ! $user->is_active]);
+
+        $status = $user->is_active ? 'activated' : 'deactivated';
+
+        return redirect()->route('manager.staff.show', $user)
+            ->with('success', "Employee {$status} successfully.");
     }
 }

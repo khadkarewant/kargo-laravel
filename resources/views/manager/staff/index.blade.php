@@ -55,6 +55,9 @@
                                         Role
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                        Status
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                                         Created At
                                     </th>
                                 </tr>
@@ -64,9 +67,10 @@
                                 @forelse ($staff as $user)
                                     <tr class="hover:bg-slate-50">
                                         <td class="px-6 py-4 text-sm font-semibold text-slate-900">
-                                            {{ $user->name }}
+                                            <a href="{{ route('manager.staff.show', $user) }}" class="hover:text-orange-600">
+                                                {{ $user->name }}
+                                            </a>
                                         </td>
-
                                         <td class="px-6 py-4 text-sm text-slate-700">
                                             {{ $user->email }}
                                         </td>
@@ -76,14 +80,24 @@
                                                 {{ ucfirst($user->role) }}
                                             </span>
                                         </td>
-
+                                        <td class="px-6 py-4 text-sm">
+                                            @if ($user->is_active)
+                                                <span class="inline-flex items-center rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700 ring-1 ring-green-200">
+                                                    Active
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-700 ring-1 ring-red-200">
+                                                    Inactive
+                                                </span>
+                                            @endif
+                                        </td>
                                         <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-700">
                                             {{ $user->created_at }}
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="4" class="px-6 py-12 text-center">
+                                        <td colspan="" class="px-6 py-12 text-center">
                                             <div class="mx-auto max-w-md">
                                                 <h3 class="text-lg font-semibold text-slate-900">No staff found</h3>
                                                 <p class="mt-2 text-sm text-slate-600">
