@@ -17,16 +17,6 @@ class ServiceRequestPolicy
         return $user->isCustomer();
     }
 
-    public function update(User $user, ServiceRequest $serviceRequest): bool
-    {
-        return $this->ownsRequest($user, $serviceRequest);
-    }
-
-    public function delete(User $user, ServiceRequest $serviceRequest): bool
-    {
-        return $this->ownsRequest($user, $serviceRequest);
-    }
-
     private function ownsRequest(User $user, ServiceRequest $serviceRequest): bool
     {
         return $serviceRequest->user_id === $user->id;
